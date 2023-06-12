@@ -15,7 +15,7 @@ namespace Skoruba.IdentityServer4.STS.Identity.Helpers
             _policy = configuration.ResolutionPolicy;
         }
 
-        public async Task<TUser> GetUserAsync(string login)
+        public async Task<TUser> GetUserAsync(string login, string tenantName)
         {
             switch (_policy)
             {

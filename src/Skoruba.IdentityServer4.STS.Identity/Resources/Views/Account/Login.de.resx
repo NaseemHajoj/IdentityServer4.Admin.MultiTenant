@@ -150,6 +150,9 @@
   <data name="Remember" xml:space="preserve">
     <value>Mein Login errinern</value>
   </data>
+  <data name="TenantName" xml:space="preserve">
+    <value>Tenant</value>
+  </data>
   <data name="Title" xml:space="preserve">
     <value>Login</value>
   </data>
