@@ -25,7 +25,7 @@ namespace Skoruba.IdentityServer4.Admin.Api.Configuration.Test
         public override void RegisterAuthentication(IServiceCollection services)
         {
             services
-                .AddIdentity<UserIdentity, UserIdentityRole>(options => Configuration.GetSection(nameof(IdentityOptions)).Bind(options))
+                .AddIdentity<ApplicationUser, UserIdentityRole>(options => Configuration.GetSection(nameof(IdentityOptions)).Bind(options))
                 .AddEntityFrameworkStores<AdminIdentityDbContext>()
                 .AddDefaultTokenProviders();
 
