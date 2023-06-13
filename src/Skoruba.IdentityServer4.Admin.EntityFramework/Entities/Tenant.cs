@@ -1,12 +1,12 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-using Skoruba.IdentityServer4.Admin.EntityFramework.Shared.Constants;
+using Skoruba.IdentityServer4.Admin.EntityFramework.Constants;
 
 using System;
 using System.ComponentModel.DataAnnotations;
 
-namespace Skoruba.IdentityServer4.Admin.EntityFramework.Shared.Entities.Identity
+namespace Skoruba.IdentityServer4.Admin.EntityFramework.Entities
 {
     public class Tenant
     {
@@ -20,7 +20,7 @@ namespace Skoruba.IdentityServer4.Admin.EntityFramework.Shared.Entities.Identity
         public string Email { get; set; }
 
         [Required]
-        public bool IsActive { get; set; }
+        public bool IsActive { get; set; } = true;
 
         [Comment("Created timestamp in UTC")]
         public DateTime CreatedDateTime { get; set; }
@@ -40,7 +40,7 @@ namespace Skoruba.IdentityServer4.Admin.EntityFramework.Shared.Entities.Identity
             builder.Property(b => b.UpdatedDateTime)
                 .HasDefaultValueSql(DatabaseConstants.GetUtcDateSqlFunction);
 
-            builder.HasIndex(tenant => new { tenant.Name, tenant.Email })
+            builder.HasIndex(tenant => tenant.Name)
                 .IsUnique();
         }
     }

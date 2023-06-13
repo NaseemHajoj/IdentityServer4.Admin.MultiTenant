@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using IdentityModel;
 using IdentityServer4.EntityFramework.Mappers;
@@ -12,7 +13,10 @@ using Microsoft.Extensions.Hosting;
 using Skoruba.AuditLogging.EntityFramework.DbContexts;
 using Skoruba.AuditLogging.EntityFramework.Entities;
 using Skoruba.IdentityServer4.Admin.EntityFramework.Configuration.Configuration;
+using Skoruba.IdentityServer4.Admin.EntityFramework.Entities;
 using Skoruba.IdentityServer4.Admin.EntityFramework.Interfaces;
+using Skoruba.IdentityServer4.Admin.EntityFramework.Shared.DbContexts;
+using Skoruba.IdentityServer4.Admin.EntityFramework.Shared.Entities.Identity;
 
 namespace Skoruba.IdentityServer4.Admin.EntityFramework.Shared.Helpers
 {
@@ -31,12 +35,12 @@ namespace Skoruba.IdentityServer4.Admin.EntityFramework.Shared.Helpers
             IHost host, bool applyDbMigrationWithDataSeedFromProgramArguments, SeedConfiguration seedConfiguration,
             DatabaseMigrationsConfiguration databaseMigrationsConfiguration)
             where TIdentityServerDbContext : DbContext, IAdminConfigurationDbContext
-            where TIdentityDbContext : DbContext
+            where TIdentityDbContext : DbContext, IAdminIdentityDbContext
             where TPersistedGrantDbContext : DbContext, IAdminPersistedGrantDbContext
             where TLogDbContext : DbContext, IAdminLogDbContext
             where TAuditLogDbContext : DbContext, IAuditLoggingDbContext<AuditLog>
             where TDataProtectionDbContext : DbContext, IDataProtectionKeyContext
-            where TUser : IdentityUser, new()
+            where TUser : ApplicationUser, new()
             where TRole : IdentityRole, new()
         {
             bool migrationComplete = false;
@@ -53,7 +57,7 @@ namespace Skoruba.IdentityServer4.Admin.EntityFramework.Shared.Helpers
                 if ((seedConfiguration != null && seedConfiguration.ApplySeed)
                     || (applyDbMigrationWithDataSeedFromProgramArguments))
                 {
-                    var seedComplete = await EnsureSeedDataAsync<TIdentityServerDbContext, TUser, TRole>(services);
+                    var seedComplete = await EnsureSeedDataAsync<TIdentityDbContext, TIdentityServerDbContext, TUser, TRole>(services);
                     return migrationComplete && seedComplete;
                 }
                 
@@ -112,21 +116,23 @@ namespace Skoruba.IdentityServer4.Admin.EntityFramework.Shared.Helpers
             return pendingMigrationCount == 0;
         }
 
-        public static async Task<bool> EnsureSeedDataAsync<TIdentityServerDbContext, TUser, TRole>(IServiceProvider serviceProvider)
+        public static async Task<bool> EnsureSeedDataAsync<TIdentityDbContext, TIdentityServerDbContext, TUser, TRole>(IServiceProvider serviceProvider)
+        where TIdentityDbContext : DbContext, IAdminIdentityDbContext
         where TIdentityServerDbContext : DbContext, IAdminConfigurationDbContext
-        where TUser : IdentityUser, new()
+        where TUser : ApplicationUser, new()
         where TRole : IdentityRole, new()
         {
             using (var scope = serviceProvider.GetRequiredService<IServiceScopeFactory>().CreateScope())
             {
-                var context = scope.ServiceProvider.GetRequiredService<TIdentityServerDbContext>();
+                var identityContext = scope.ServiceProvider.GetRequiredService<TIdentityDbContext>();
+                var identityServerContext = scope.ServiceProvider.GetRequiredService<TIdentityServerDbContext>();
                 var userManager = scope.ServiceProvider.GetRequiredService<UserManager<TUser>>();
                 var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<TRole>>();
                 var idsDataConfiguration = scope.ServiceProvider.GetRequiredService<IdentityServerData>();
                 var idDataConfiguration = scope.ServiceProvider.GetRequiredService<IdentityData>();
 
-                await EnsureSeedIdentityServerData(context, idsDataConfiguration);
-                await EnsureSeedIdentityData(userManager, roleManager, idDataConfiguration);
+                await EnsureSeedIdentityServerData(identityServerContext, idsDataConfiguration);
+                await EnsureSeedIdentityData(identityContext, userManager, roleManager, idDataConfiguration);
                 return true;
             }
         }
@@ -134,11 +140,34 @@ namespace Skoruba.IdentityServer4.Admin.EntityFramework.Shared.Helpers
         /// <summary>
         /// Generate default admin user / role
         /// </summary>
-        private static async Task EnsureSeedIdentityData<TUser, TRole>(UserManager<TUser> userManager,
+        private static async Task EnsureSeedIdentityData<TIdentityDbContext, TUser, TRole>(
+            TIdentityDbContext context,
+            UserManager<TUser> userManager,
             RoleManager<TRole> roleManager, IdentityData identityDataConfiguration)
-            where TUser : IdentityUser, new()
+            where TIdentityDbContext : DbContext, IAdminIdentityDbContext
+            where TUser : ApplicationUser, new()
             where TRole : IdentityRole, new()
         {
+            // verify system tenant exists, or create
+            Tenant systemTenant = await context.Tenants.FirstOrDefaultAsync(o =>
+            o.Id == identityDataConfiguration.SystemTenant.Id
+            && o.Name == identityDataConfiguration.SystemTenant.Name);
+
+            if (systemTenant == null)
+            {
+                // system tenant was not found, create one.
+                systemTenant = new Tenant
+                {
+                    Id = identityDataConfiguration.SystemTenant.Id,
+                    Name = identityDataConfiguration.SystemTenant.Name,
+                    IsActive = true,
+                    CreatedDateTime = DateTime.UtcNow,
+                    Email = identityDataConfiguration.SystemTenant.Email,
+                };
+
+                await context.Tenants.AddAsync(systemTenant);
+            }
+            
             // adding roles from seed
             foreach (var r in identityDataConfiguration.Roles)
             {
@@ -167,8 +196,11 @@ namespace Skoruba.IdentityServer4.Admin.EntityFramework.Shared.Helpers
                 var identityUser = new TUser
                 {
                     UserName = user.Username,
+                    FirstName = user.Firstname,
+                    LastName = user.Lastname,
                     Email = user.Email,
-                    EmailConfirmed = true
+                    EmailConfirmed = true,
+                    TenantId = systemTenant.Id
                 };
 
                 var userByUserName = await userManager.FindByNameAsync(user.Username);

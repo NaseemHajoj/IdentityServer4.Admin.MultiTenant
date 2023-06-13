@@ -2,7 +2,8 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-using Skoruba.IdentityServer4.Admin.EntityFramework.Shared.Constants;
+using Skoruba.IdentityServer4.Admin.EntityFramework.Constants;
+using Skoruba.IdentityServer4.Admin.EntityFramework.Entities;
 
 using System;
 using System.ComponentModel.DataAnnotations;

@@ -1,5 +1,11 @@
 ﻿{
   "IdentityData": {
+    "SystemTenant": {
+      "Id": "48e6ecd3-d3a5-4da2-a53f-f5921784912a",
+      "Name": "System",
+      "DisplayName": "Advanced Packages Tracker System",
+      "Email": "system@advancedpackagestrack.com"
+    },
     "Roles": [
       {
         "Name": "SkorubaIdentityAdminAdministrator"
@@ -7,9 +13,11 @@
     ],
     "Users": [
       {
-        "Username": "admin",
+        "Username": "Naseem",
+        "FirstName": "Naseem",
+        "LastName":  "Hajoj",
         "Password": "Pa$$word123",
-        "Email": "admin@skoruba.com",
+        "Email": "naseemhajoj@gmail.com",
         "Roles": [
           "SkorubaIdentityAdminAdministrator"
         ],
@@ -18,7 +26,8 @@
             "Type": "name",
             "Value": "admin"
           }
-        ]
+        ],
+        "TenantName": "System"
       }
     ]
   }
