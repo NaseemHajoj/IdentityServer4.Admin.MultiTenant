@@ -30,6 +30,8 @@ using Skoruba.IdentityServer4.Admin.EntityFramework.Configuration.MySql;
 using Skoruba.IdentityServer4.Admin.EntityFramework.Configuration.PostgreSQL;
 using Skoruba.IdentityServer4.Admin.EntityFramework.Configuration.SqlServer;
 using Skoruba.IdentityServer4.Admin.EntityFramework.Helpers;
+using Skoruba.IdentityServer4.Admin.EntityFramework.Shared.Entities.Identity;
+using Skoruba.IdentityServer4.Admin.EntityFramework.Shared.Identity;
 using Skoruba.IdentityServer4.Admin.EntityFramework.Shared.Interfaces;
 
 namespace Skoruba.IdentityServer4.Admin.Api.Helpers
@@ -176,17 +178,19 @@ namespace Skoruba.IdentityServer4.Admin.Api.Helpers
         /// <typeparam name="TRole">Entity with Role</typeparam>
         /// <param name="services"></param>
         /// <param name="configuration"></param>
-        public static void AddApiAuthentication<TIdentityDbContext, TUser, TRole>(this IServiceCollection services,
+        public static void AddApiAuthentication<TIdentityDbContext, TUser, TRole, TKey>(this IServiceCollection services,
             IConfiguration configuration)
             where TIdentityDbContext : DbContext
             where TRole : class
-            where TUser : class
+            where TUser : ApplicationUser<string>, new()
         {
             var adminApiConfiguration = configuration.GetSection(nameof(AdminApiConfiguration)).Get<AdminApiConfiguration>();
 
             services
                 .AddIdentity<TUser, TRole>(options => configuration.GetSection(nameof(IdentityOptions)).Bind(options))
                 .AddEntityFrameworkStores<TIdentityDbContext>()
+                .AddUserStore<ApplicationUserStore<TUser>>()
+                .AddUserManager<ApplicationUserManager<TUser>>()
                 .AddDefaultTokenProviders();
 
             services.AddAuthentication(options =>
