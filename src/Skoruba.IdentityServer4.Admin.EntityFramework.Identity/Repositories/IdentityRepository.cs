@@ -5,21 +5,26 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Security.Claims;
 using System.Threading.Tasks;
+
 using AutoMapper;
+
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+
 using Skoruba.IdentityServer4.Admin.EntityFramework.Extensions.Common;
-using Skoruba.IdentityServer4.Admin.EntityFramework.Extensions.Enums;
-using Skoruba.IdentityServer4.Admin.EntityFramework.Extensions.Extensions;
 using Skoruba.IdentityServer4.Admin.EntityFramework.Identity.Repositories.Interfaces;
+using Skoruba.IdentityServer4.Admin.EntityFramework.Shared.Entities.Extensions;
+using Skoruba.IdentityServer4.Admin.EntityFramework.Shared.Entities.Identity;
+using Skoruba.IdentityServer4.Admin.EntityFramework.Shared.Enums;
+using Skoruba.IdentityServer4.Admin.EntityFramework.Shared.Interfaces;
 
 namespace Skoruba.IdentityServer4.Admin.EntityFramework.Identity.Repositories
 {
     public class IdentityRepository<TIdentityDbContext, TUser, TRole, TKey, TUserClaim, TUserRole, TUserLogin, TRoleClaim, TUserToken>
         : IIdentityRepository<TUser, TRole, TKey, TUserClaim, TUserRole, TUserLogin, TRoleClaim, TUserToken>
-        where TIdentityDbContext : IdentityDbContext<TUser, TRole, TKey, TUserClaim, TUserRole, TUserLogin, TRoleClaim, TUserToken>
-        where TUser : IdentityUser<TKey>
+        where TIdentityDbContext : IdentityDbContext<TUser, TRole, TKey, TUserClaim, TUserRole, TUserLogin, TRoleClaim, TUserToken>, IAdminIdentityDbContext
+        where TUser : ApplicationUser<TKey>
         where TRole : IdentityRole<TKey>
         where TKey : IEquatable<TKey>
         where TUserClaim : IdentityUserClaim<TKey>
@@ -69,12 +74,104 @@ namespace Skoruba.IdentityServer4.Admin.EntityFramework.Identity.Repositories
             return RoleManager.Roles.AnyAsync(x => x.Id.Equals(id));
         }
 
+        public virtual async Task<PagedList<Tenant>> GetTenantsAsync(string search, int page = 1, int pageSize = 10)
+        {
+            var pagedList = new PagedList<Tenant>();
+            Expression<Func<Tenant, bool>> searchCondition = tenant => tenant.Name.Contains(search) || tenant.Email.Contains(search);
+
+            var tenants = await this.DbContext.Tenants.WhereIf(!string.IsNullOrEmpty(search), searchCondition).PageBy(x => x.Id, page, pageSize).ToListAsync();
+
+            pagedList.Data.AddRange(tenants);
+
+            pagedList.TotalCount = await this.DbContext.Tenants.WhereIf(!string.IsNullOrEmpty(search), searchCondition).CountAsync();
+            pagedList.PageSize = pageSize;
+
+            return pagedList;
+        }
+
+        public virtual Task<Tenant> GetTenantAsync(Guid tenantId)
+        {
+            return this.DbContext.Tenants.FirstOrDefaultAsync(tenant => tenant.Id == tenantId);
+        }
+
+        public virtual async Task<(IdentityResult identityResult, Guid tenantId)> CreateTenantAsync(Tenant tenant)
+        {
+            try
+            {
+                await this.DbContext.Tenants.AddAsync(tenant);
+                await this.DbContext.SaveChangesAsync();
+
+                return (IdentityResult.Success, tenant.Id);
+            }
+            catch (Exception ex)
+            {
+                var errors = new IdentityError
+                {
+                    Code = "TenantCreationFailed",
+                    Description = ex.Message,
+                };
+
+                return (IdentityResult.Failed(errors), Guid.Empty);
+            }
+        }
+
+        public virtual async Task<(IdentityResult identityResult, Guid tenantId)> UpdateTenantAsync(Tenant updatedTenant)
+        {
+            try
+            {
+                var tenant = await this.DbContext.Tenants.FirstOrDefaultAsync(t => t.Id == updatedTenant.Id);
+                this.Mapper.Map(updatedTenant, tenant);
+                this.DbContext.Tenants.Update(tenant);
+                await this.DbContext.SaveChangesAsync();
+
+                return (IdentityResult.Success, tenant.Id);
+            }
+            catch (Exception ex)
+            {
+                var errors = new IdentityError
+                {
+                    Code = "TenantUpdateFailed",
+                    Description = ex.Message,
+                };
+
+                return (IdentityResult.Failed(errors), Guid.Empty);
+            }
+        }
+
+        public virtual async Task<IdentityResult> DeleteTenantAsync(Guid tenantId)
+        {
+            try
+            {
+                Tenant tenant = await this.DbContext.Tenants.FirstOrDefaultAsync(tenant => tenant.Id == tenantId);
+
+                if (tenant != null)
+                {
+                    this.DbContext.Tenants.Remove(tenant);
+                    await this.DbContext.SaveChangesAsync();
+                }
+
+                return IdentityResult.Success;
+            }
+            catch (Exception ex)
+            {
+                var errors = new IdentityError
+                {
+                    Code = "TenantDeletionFailed",
+                    Description = ex.Message,
+                };
+
+                return IdentityResult.Failed(errors);
+            }
+        }
+
         public virtual async Task<PagedList<TUser>> GetUsersAsync(string search, int page = 1, int pageSize = 10)
         {
             var pagedList = new PagedList<TUser>();
-            Expression<Func<TUser, bool>> searchCondition = x => x.UserName.Contains(search) || x.Email.Contains(search);
+            Expression<Func<TUser, bool>> searchCondition = x => x.UserName.Contains(search) || x.Email.Contains(search) || x.TenantName.Contains(search);
 
-            var users = await UserManager.Users.WhereIf(!string.IsNullOrEmpty(search), searchCondition).PageBy(x => x.Id, page, pageSize).ToListAsync();
+            var users = await UserManager.Users
+                .Include(o => o.Tenant)
+                .WhereIf(!string.IsNullOrEmpty(search), searchCondition).PageBy(x => x.Id, page, pageSize).ToListAsync();
 
             pagedList.Data.AddRange(users);
 
@@ -171,9 +268,15 @@ namespace Skoruba.IdentityServer4.Admin.EntityFramework.Identity.Repositories
             return await RoleManager.DeleteAsync(thisRole);
         }
 
-        public virtual Task<TUser> GetUserAsync(string userId)
+        public virtual async Task<TUser> GetUserAsync(string userId)
         {
-            return UserManager.FindByIdAsync(userId);
+            TUser user = await UserManager.FindByIdAsync(userId);
+            
+            this.DbContext.Entry(user)
+                .Reference(o => o.Tenant)
+                .Load();
+
+            return user;
         }
 
         /// <summary>

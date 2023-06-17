@@ -7,9 +7,13 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+
+using MySqlConnector;
+
 using Skoruba.IdentityServer4.Admin.BusinessLogic.Identity.Dtos.Identity;
 using Skoruba.IdentityServer4.Admin.BusinessLogic.Identity.Services.Interfaces;
 using Skoruba.IdentityServer4.Admin.BusinessLogic.Shared.Dtos.Common;
+using Skoruba.IdentityServer4.Admin.EntityFramework.Shared.Entities.Identity;
 using Skoruba.IdentityServer4.Admin.UI.Configuration.Constants;
 using Skoruba.IdentityServer4.Admin.UI.ExceptionHandling;
 using Skoruba.IdentityServer4.Admin.UI.Helpers.Localization;
@@ -24,7 +28,7 @@ namespace Skoruba.IdentityServer4.Admin.UI.Areas.AdminUI.Controllers
             TUserProviderDto, TUserProvidersDto, TUserChangePasswordDto, TRoleClaimsDto, TUserClaimDto, TRoleClaimDto> : BaseController
         where TUserDto : UserDto<TKey>, new()
         where TRoleDto : RoleDto<TKey>, new()
-        where TUser : IdentityUser<TKey>
+        where TUser : ApplicationUser<TKey>
         where TRole : IdentityRole<TKey>
         where TKey : IEquatable<TKey>
         where TUserClaim : IdentityUserClaim<TKey>
@@ -109,6 +113,99 @@ namespace Skoruba.IdentityServer4.Admin.UI.Areas.AdminUI.Controllers
             SuccessNotification(string.Format(_localizer["SuccessCreateRole"], role.Name), _localizer["SuccessTitle"]);
 
             return RedirectToAction(nameof(Role), new { Id = roleId });
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> Tenants(int? page, string search)
+        {
+            ViewBag.Search = search;
+            var tenantsDto = await _identityService.GetTenantsAsync(search, page ?? 1);
+
+            return View(tenantsDto);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> TenantProfile(Guid id)
+        {
+            if (EqualityComparer<Guid>.Default.Equals(id, default))
+            {
+                var newTenant = new TenantDto();
+                return this.View(nameof(this.TenantProfile), newTenant);
+            }
+
+            TenantDto tenant = await this._identityService.GetTenantAsync(id);
+            if (tenant == null)
+            {
+                return this.NotFound();
+            }
+
+            return this.View(nameof(this.TenantProfile), tenant);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> TenantProfile(TenantDto tenant)
+        {
+            if (!this.ModelState.IsValid)
+            {
+                return View(tenant);
+            }
+
+            Guid tenantId;
+
+            if (EqualityComparer<Guid>.Default.Equals(tenant.Id, default))
+            {
+                // creating a new tenant
+                tenant.IsActive = true;
+                var tenantCreation = await _identityService.CreateTenantAsync(tenant);
+                tenantId = tenantCreation.tenantId;
+            }
+            else
+            {
+                // updating existing tenant
+                var tenantCreation = await _identityService.UpdateTenantAsync(tenant);
+                tenantId = tenantCreation.tenantId;
+            }
+
+            this.SuccessNotification(string.Format(this._localizer["SuccessCreateTenant"], tenant.Name), this._localizer["SuccessTitle"]);
+
+            return this.RedirectToAction(nameof(this.TenantProfile), new { Id = tenantId });
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> TenantDelete(Guid id)
+        {
+            if (EqualityComparer<Guid>.Default.Equals(id, default))
+            {
+                return this.NotFound();
+            }
+
+            TenantDto tenant = await _identityService.GetTenantAsync(id);
+            if (tenant == null)
+            {
+                return this.NotFound();
+            }
+
+            return View(tenant);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> TenantDelete(TenantDto tenant)
+        {
+            var currentUserId = User.GetSubjectId();
+            if (tenant.Name == "System")
+            {
+                CreateNotification(Helpers.NotificationHelpers.AlertType.Warning, _localizer["ErrorDeleteTenant_CannotDeleteSystemTenant"]);
+                return RedirectToAction(nameof(TenantDelete), tenant.Id);
+            }
+            else
+            {
+                await _identityService.DeleteTenantAsync(tenant);
+                SuccessNotification(_localizer["SuccessDeleteTenant"], _localizer["SuccessTitle"]);
+
+                return RedirectToAction(nameof(Tenants));
+            }
         }
 
         [HttpGet]

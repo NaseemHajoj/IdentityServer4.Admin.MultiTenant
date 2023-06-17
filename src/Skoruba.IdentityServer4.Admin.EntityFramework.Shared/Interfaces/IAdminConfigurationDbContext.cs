@@ -1,8 +1,9 @@
 ﻿using IdentityServer4.EntityFramework.Entities;
 using IdentityServer4.EntityFramework.Interfaces;
+
 using Microsoft.EntityFrameworkCore;
 
-namespace Skoruba.IdentityServer4.Admin.EntityFramework.Interfaces
+namespace Skoruba.IdentityServer4.Admin.EntityFramework.Shared.Interfaces
 {
     public interface IAdminConfigurationDbContext : IConfigurationDbContext
     {

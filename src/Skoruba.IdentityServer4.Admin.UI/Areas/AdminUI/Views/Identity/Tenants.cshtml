@@ -1,0 +1,79 @@
+﻿@using Microsoft.AspNetCore.Mvc.Localization
+@using Skoruba.IdentityServer4.Admin.BusinessLogic.Shared.Dtos.Common
+@using Skoruba.IdentityServer4.Admin.UI.Configuration.Constants
+@model Skoruba.IdentityServer4.Admin.BusinessLogic.Identity.Dtos.Identity.Interfaces.ITenantsDto
+@inject IViewLocalizer Localizer
+
+@{
+    ViewBag.Title = Localizer["Title"];
+    Layout = "_Layout";
+}
+
+<div class="row">
+    <div class="col-12 mb-3 text-center mt-1">
+        <h2><span class="oi oi-person" title="Tenants" aria-hidden="true"></span> @Localizer["Title"]</h2>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-12">
+        <a asp-area="@CommonConsts.AdminUIArea" asp-action="TenantProfile" class="btn btn-outline-primary mb-3 mt-3"><span class="oi oi-plus"></span> @Localizer["ActionAddTenant"]</a>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-12">
+        @await Html.PartialAsync("Common/Search", new Search() { Action = "Tenants", Controller = "Identity" })
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-12">
+        <div class="table-responsive">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th></th>
+                        <th></th>
+                        <th>@Localizer["TenantId"]</th>
+                        <th>@Localizer["TenantName"]</th>
+                        <th>@Localizer["TenantAdminEmail"]</th>
+                        <th></th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    @foreach (var tenant in Model.Tenants)
+                    {
+                        <tr>
+                            <td class="align-middle">
+                                <a asp-area="@CommonConsts.AdminUIArea" class="btn btn-primary" asp-action="TenantProfile" asp-route-id="@tenant.Id">@Localizer["ActionEditTenant"]</a>
+                            </td>
+                            <td class="align-middle">
+                                <img-gravatar email="@tenant.Email" class="gravatar-image img-thumbnail" />
+                            </td>
+                            <td class="align-middle">@tenant.Id</td>
+                            <td class="align-middle">@tenant.Name</td>
+                            <td class="align-middle">@tenant.Email</td>
+
+                            @if (tenant.Name != "System")
+                            {
+                                <td class="align-middle">
+                                    <a asp-area="@CommonConsts.AdminUIArea" class="btn btn-danger" asp-action="TenantDelete" asp-route-id="@tenant.Id">
+                                        <span class="oi oi-x"></span>
+                                    </a>
+                                </td>
+                            }
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-12">
+        @await Html.PartialAsync("Common/Pager", new Pager { Action = "Tenants", PageSize = Model.PageSize, TotalCount = Model.TotalCount, EnableSearch = true, Search = ViewBag.Search })
+    </div>
+</div>

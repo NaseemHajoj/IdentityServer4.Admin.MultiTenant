@@ -1,26 +1,27 @@
-﻿using System;
-using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Threading.Tasks;
-using IdentityModel;
+﻿using IdentityModel;
+
 using IdentityServer4.EntityFramework.Mappers;
 using IdentityServer4.Models;
+
 using Microsoft.AspNetCore.DataProtection.EntityFrameworkCore;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+
 using Skoruba.AuditLogging.EntityFramework.DbContexts;
 using Skoruba.AuditLogging.EntityFramework.Entities;
 using Skoruba.IdentityServer4.Admin.EntityFramework.Configuration.Configuration;
-using Skoruba.IdentityServer4.Admin.EntityFramework.Entities;
-using Skoruba.IdentityServer4.Admin.EntityFramework.Interfaces;
-using Skoruba.IdentityServer4.Admin.EntityFramework.Shared.DbContexts;
 using Skoruba.IdentityServer4.Admin.EntityFramework.Shared.Entities.Identity;
+using Skoruba.IdentityServer4.Admin.EntityFramework.Shared.Interfaces;
 
-namespace Skoruba.IdentityServer4.Admin.EntityFramework.Shared.Helpers
+using System;
+using System.Linq;
+using System.Threading.Tasks;
+
+namespace Skoruba.IdentityServer4.Admin.EntityFramework.Helpers
 {
-	public static class DbMigrationHelpers
+    public static class DbMigrationHelpers
     {
         /// <summary>
         /// Generate migrations before running this method, you can use these steps bellow:
@@ -31,7 +32,7 @@ namespace Skoruba.IdentityServer4.Admin.EntityFramework.Shared.Helpers
         /// <param name="seedConfiguration"></param>
         /// <param name="databaseMigrationsConfiguration"></param>
         public static async Task<bool> ApplyDbMigrationsWithDataSeedAsync<TIdentityServerDbContext, TIdentityDbContext,
-            TPersistedGrantDbContext, TLogDbContext, TAuditLogDbContext, TDataProtectionDbContext, TUser, TRole>(
+            TPersistedGrantDbContext, TLogDbContext, TAuditLogDbContext, TDataProtectionDbContext, TUser, TRole, TKey>(
             IHost host, bool applyDbMigrationWithDataSeedFromProgramArguments, SeedConfiguration seedConfiguration,
             DatabaseMigrationsConfiguration databaseMigrationsConfiguration)
             where TIdentityServerDbContext : DbContext, IAdminConfigurationDbContext
@@ -40,8 +41,9 @@ namespace Skoruba.IdentityServer4.Admin.EntityFramework.Shared.Helpers
             where TLogDbContext : DbContext, IAdminLogDbContext
             where TAuditLogDbContext : DbContext, IAuditLoggingDbContext<AuditLog>
             where TDataProtectionDbContext : DbContext, IDataProtectionKeyContext
-            where TUser : ApplicationUser, new()
-            where TRole : IdentityRole, new()
+            where TUser : ApplicationUser<TKey>, new()
+            where TRole : IdentityRole<TKey>, new()
+            where TKey : IEquatable<TKey>
         {
             bool migrationComplete = false;
             using (var serviceScope = host.Services.CreateScope())
@@ -57,7 +59,7 @@ namespace Skoruba.IdentityServer4.Admin.EntityFramework.Shared.Helpers
                 if ((seedConfiguration != null && seedConfiguration.ApplySeed)
                     || (applyDbMigrationWithDataSeedFromProgramArguments))
                 {
-                    var seedComplete = await EnsureSeedDataAsync<TIdentityDbContext, TIdentityServerDbContext, TUser, TRole>(services);
+                    var seedComplete = await EnsureSeedDataAsync<TIdentityDbContext, TIdentityServerDbContext, TUser, TRole, TKey>(services);
                     return migrationComplete && seedComplete;
                 }
                 
@@ -116,11 +118,12 @@ namespace Skoruba.IdentityServer4.Admin.EntityFramework.Shared.Helpers
             return pendingMigrationCount == 0;
         }
 
-        public static async Task<bool> EnsureSeedDataAsync<TIdentityDbContext, TIdentityServerDbContext, TUser, TRole>(IServiceProvider serviceProvider)
+        public static async Task<bool> EnsureSeedDataAsync<TIdentityDbContext, TIdentityServerDbContext, TUser, TRole, TKey>(IServiceProvider serviceProvider)
         where TIdentityDbContext : DbContext, IAdminIdentityDbContext
         where TIdentityServerDbContext : DbContext, IAdminConfigurationDbContext
-        where TUser : ApplicationUser, new()
-        where TRole : IdentityRole, new()
+        where TUser : ApplicationUser<TKey>, new()
+        where TRole : IdentityRole<TKey>, new()
+        where TKey : IEquatable<TKey>
         {
             using (var scope = serviceProvider.GetRequiredService<IServiceScopeFactory>().CreateScope())
             {
@@ -132,7 +135,7 @@ namespace Skoruba.IdentityServer4.Admin.EntityFramework.Shared.Helpers
                 var idDataConfiguration = scope.ServiceProvider.GetRequiredService<IdentityData>();
 
                 await EnsureSeedIdentityServerData(identityServerContext, idsDataConfiguration);
-                await EnsureSeedIdentityData(identityContext, userManager, roleManager, idDataConfiguration);
+                await EnsureSeedIdentityData<TIdentityDbContext, TUser, TRole, TKey>(identityContext, userManager, roleManager, idDataConfiguration);
                 return true;
             }
         }
@@ -140,13 +143,14 @@ namespace Skoruba.IdentityServer4.Admin.EntityFramework.Shared.Helpers
         /// <summary>
         /// Generate default admin user / role
         /// </summary>
-        private static async Task EnsureSeedIdentityData<TIdentityDbContext, TUser, TRole>(
+        private static async Task EnsureSeedIdentityData<TIdentityDbContext, TUser, TRole, TKey>(
             TIdentityDbContext context,
             UserManager<TUser> userManager,
             RoleManager<TRole> roleManager, IdentityData identityDataConfiguration)
             where TIdentityDbContext : DbContext, IAdminIdentityDbContext
-            where TUser : ApplicationUser, new()
-            where TRole : IdentityRole, new()
+            where TUser : ApplicationUser<TKey>, new()
+            where TRole : IdentityRole<TKey>, new()
+            where TKey : IEquatable<TKey>
         {
             // verify system tenant exists, or create
             Tenant systemTenant = await context.Tenants.FirstOrDefaultAsync(o =>

@@ -1,7 +1,8 @@
 ﻿using System;
 using System.Threading.Tasks;
-using Skoruba.IdentityServer4.Admin.EntityFramework.Entities;
+
 using Skoruba.IdentityServer4.Admin.EntityFramework.Extensions.Common;
+using Skoruba.IdentityServer4.Admin.EntityFramework.Shared.Entities;
 
 namespace Skoruba.IdentityServer4.Admin.EntityFramework.Repositories.Interfaces
 {

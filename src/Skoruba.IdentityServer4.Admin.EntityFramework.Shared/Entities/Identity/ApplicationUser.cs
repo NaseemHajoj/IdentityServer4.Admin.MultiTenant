@@ -1,18 +1,18 @@
-﻿using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata.Builders;
-
-using Skoruba.IdentityServer4.Admin.EntityFramework.Constants;
-using Skoruba.IdentityServer4.Admin.EntityFramework.Entities;
-
-using System;
+﻿using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
+
+using Skoruba.IdentityServer4.Admin.EntityFramework.Shared.Constants;
+
 namespace Skoruba.IdentityServer4.Admin.EntityFramework.Shared.Entities.Identity
 {
-    public class ApplicationUser : IdentityUser
-	{
+    public class ApplicationUser<TKey>: IdentityUser<TKey>
+        where TKey : IEquatable<TKey>
+    {
         [Required]
         [MaxLength(100)]
         public string FirstName { get; set; }
@@ -40,6 +40,12 @@ namespace Skoruba.IdentityServer4.Admin.EntityFramework.Shared.Entities.Identity
 
         public Guid TenantId { get; set; }
 
+        /// <summary>
+        /// TenantName, will not be mapped
+        /// </summary>
+        [NotMapped]
+        public string TenantName { get; set; }
+
         [Comment("Created timestamp in UTC")]
         public DateTime CreatedDateTime { get; set; }
 
@@ -50,10 +56,11 @@ namespace Skoruba.IdentityServer4.Admin.EntityFramework.Shared.Entities.Identity
         public Tenant Tenant { get; set; }
     }
 
-    public class ApplicationUserEntityTypeConfiguration : IEntityTypeConfiguration<ApplicationUser>
+    public class ApplicationUserEntityTypeConfiguration<TKey> : IEntityTypeConfiguration<ApplicationUser<TKey>>
+        where TKey : IEquatable<TKey>
     {
         /// <inheritdoc />
-        public void Configure(EntityTypeBuilder<ApplicationUser> builder)
+        public void Configure(EntityTypeBuilder<ApplicationUser<TKey>> builder)
         {
             builder.Property(b => b.CreatedDateTime)
                 .HasDefaultValueSql(DatabaseConstants.GetUtcDateSqlFunction);

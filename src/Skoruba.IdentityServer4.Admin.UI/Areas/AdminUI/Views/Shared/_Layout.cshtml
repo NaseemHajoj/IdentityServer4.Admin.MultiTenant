@@ -63,6 +63,7 @@
                 @Localizer["TitleUsermanagement"]
             </button>
             <div class="dropdown-menu">
+                <a class="dropdown-item" asp-area="@CommonConsts.AdminUIArea" asp-controller="Identity" asp-action="Tenants">@Localizer["LinkTenants"]</a>
                 <a class="dropdown-item" asp-area="@CommonConsts.AdminUIArea" asp-controller="Identity" asp-action="Users">@Localizer["LinkUsers"]</a>
                 <a class="dropdown-item" asp-area="@CommonConsts.AdminUIArea" asp-controller="Identity" asp-action="Roles">@Localizer["LinkRoles"]</a>
             </div>

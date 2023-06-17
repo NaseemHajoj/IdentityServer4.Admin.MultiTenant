@@ -38,6 +38,8 @@
                         <th>@Localizer["UserId"]</th>
                         <th>@Localizer["UserName"]</th>
                         <th>@Localizer["Email"]</th>
+                        <th>@Localizer["TenantId"]</th>
+                        <th>@Localizer["TenantName"]</th>
                         <th></th>
                     </tr>
                 </thead>
@@ -55,6 +57,8 @@
                             <td class="align-middle">@user.Id</td>
                             <td class="align-middle">@user.UserName</td>
                             <td class="align-middle">@user.Email</td>
+                            <td class="align-middle">@user.TenantId</td>
+                            <td class="align-middle">@user.TenantName</td>
                             <td class="align-middle">
                                 <a asp-area="@CommonConsts.AdminUIArea" class="btn btn-danger" asp-action="UserDelete" asp-route-id="@user.Id"><span class="oi oi-x"></span></a>
                             </td>

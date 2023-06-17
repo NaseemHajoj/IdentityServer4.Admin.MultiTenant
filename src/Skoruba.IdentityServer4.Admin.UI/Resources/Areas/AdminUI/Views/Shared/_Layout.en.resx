@@ -147,6 +147,9 @@
   <data name="LinkRoles" xml:space="preserve">
     <value>Roles</value>
   </data>
+  <data name="LinkTenants" xml:space="preserve">
+    <value>Tenants</value>
+  </data>
   <data name="LinkUsers" xml:space="preserve">
     <value>Users</value>
   </data>
@@ -160,6 +163,6 @@
     <value>Logs</value>
   </data>
   <data name="TitleUsermanagement" xml:space="preserve">
-    <value>Users/Roles</value>
+    <value>Tenants/Users/Roles</value>
   </data>
 </root>

@@ -1,11 +1,13 @@
 ﻿using System.Threading.Tasks;
+
 using IdentityServer4.EntityFramework.Entities;
-using Skoruba.IdentityServer4.Admin.EntityFramework.Entities;
+
 using Skoruba.IdentityServer4.Admin.EntityFramework.Extensions.Common;
+using Skoruba.IdentityServer4.Admin.EntityFramework.Shared.Entities;
 
 namespace Skoruba.IdentityServer4.Admin.EntityFramework.Repositories.Interfaces
 {
-	public interface IPersistedGrantRepository
+    public interface IPersistedGrantRepository
     {
 		Task<PagedList<PersistedGrantDataView>> GetPersistedGrantsByUsersAsync(string search, int page = 1, int pageSize = 10);
 		Task<PagedList<PersistedGrant>> GetPersistedGrantsByUserAsync(string subjectId, int page = 1, int pageSize = 10);

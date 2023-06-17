@@ -2,13 +2,15 @@
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
+
 using Microsoft.EntityFrameworkCore;
-using Skoruba.IdentityServer4.Admin.EntityFramework.Entities;
+
 using Skoruba.IdentityServer4.Admin.EntityFramework.Extensions.Common;
-using Skoruba.IdentityServer4.Admin.EntityFramework.Extensions.Enums;
-using Skoruba.IdentityServer4.Admin.EntityFramework.Extensions.Extensions;
-using Skoruba.IdentityServer4.Admin.EntityFramework.Interfaces;
 using Skoruba.IdentityServer4.Admin.EntityFramework.Repositories.Interfaces;
+using Skoruba.IdentityServer4.Admin.EntityFramework.Shared.Entities;
+using Skoruba.IdentityServer4.Admin.EntityFramework.Shared.Entities.Extensions;
+using Skoruba.IdentityServer4.Admin.EntityFramework.Shared.Enums;
+using Skoruba.IdentityServer4.Admin.EntityFramework.Shared.Interfaces;
 
 namespace Skoruba.IdentityServer4.Admin.EntityFramework.Repositories
 {
@@ -19,7 +21,7 @@ namespace Skoruba.IdentityServer4.Admin.EntityFramework.Repositories
 
         public LogRepository(TDbContext dbContext)
         {
-            DbContext = dbContext;
+            this.DbContext = dbContext;
         }
 
         public virtual async Task DeleteLogsOlderThanAsync(DateTime deleteOlderThan)
@@ -28,7 +30,7 @@ namespace Skoruba.IdentityServer4.Admin.EntityFramework.Repositories
 
             if(logsToDelete.Count == 0) return;
 
-            DbContext.Logs.RemoveRange(logsToDelete);
+            this.DbContext.Logs.RemoveRange(logsToDelete);
 
             await AutoSaveChangesAsync();
         }

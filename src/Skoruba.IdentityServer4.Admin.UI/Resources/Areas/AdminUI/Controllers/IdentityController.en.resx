@@ -117,14 +117,24 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+
+  <data name="ErrorDeleteTenant_CannotDeleteSystemTenant" xml:space="preserve">
+    <value>You cannot delete System tenant.</value>
+  </data>
   <data name="ErrorDeleteUser_CannotSelfDelete" xml:space="preserve">
     <value>You cannot delete yourself. If you want to delete this account, first create a new administrative account, then switch to it and delete this account from there.</value>
   </data>
   <data name="SuccessCreateRole" xml:space="preserve">
     <value>Role {0} is successfully saved!</value>
   </data>
-  <data name="SuccessCreateRoleClaims" xml:space="preserve">
+  <data name="ActionEditTenant" xml:space="preserve">
+    <value>Edit tenant</value>
+  </data>
+    <data name="SuccessCreateRoleClaims" xml:space="preserve">
     <value>Claim {0} - {1} is successfully saved!</value>
+  </data>
+  <data name="SuccessCreateTenant" xml:space="preserve">
+    <value>Tenant {0} is successfully saved!</value>
   </data>
   <data name="SuccessCreateUser" xml:space="preserve">
     <value>User {0} is successfully saved!</value>
@@ -141,7 +151,10 @@
   <data name="SuccessDeleteRoleClaims" xml:space="preserve">
     <value>Claim is successfully deleted!</value>
   </data>
-  <data name="SuccessDeleteUser" xml:space="preserve">
+  <data name="SuccessDeleteTenant" xml:space="preserve">
+    <value>Tenant is successfully deleted!</value>
+  </data>
+	<data name="SuccessDeleteUser" xml:space="preserve">
     <value>User is successfully deleted!</value>
   </data>
   <data name="SuccessDeleteUserClaims" xml:space="preserve">

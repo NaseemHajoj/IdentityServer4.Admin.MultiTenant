@@ -13,7 +13,7 @@
     }
 }
 
-@inject SignInManager<ApplicationUser> SignInManager
+@inject SignInManager<ApplicationUser<string>> SignInManager
 @{
     var hasExternalLogins = (await SignInManager.GetExternalAuthenticationSchemesAsync()).Any();
 }

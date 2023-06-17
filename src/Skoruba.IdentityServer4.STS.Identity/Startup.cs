@@ -49,7 +49,7 @@ namespace Skoruba.IdentityServer4.STS.Identity
             // Add all dependencies for Asp.Net Core Identity in MVC - these dependencies are injected into generic Controllers
             // Including settings for MVC and Localization
             // If you want to change primary keys or use another db model for Asp.Net Core Identity:
-            services.AddMvcWithLocalization<ApplicationUser, string>(Configuration);
+            services.AddMvcWithLocalization<ApplicationUser<string>, string>(Configuration);
 
             // Add authorization policies for MVC
             RegisterAuthorization(services);
@@ -99,8 +99,8 @@ namespace Skoruba.IdentityServer4.STS.Identity
 
         public virtual void RegisterAuthentication(IServiceCollection services)
         {
-            services.AddAuthenticationServices<AdminIdentityDbContext, ApplicationUser, UserIdentityRole>(Configuration);
-            services.AddIdentityServer<IdentityServerConfigurationDbContext, IdentityServerPersistedGrantDbContext, ApplicationUser>(Configuration);
+            services.AddAuthenticationServices<AdminIdentityDbContext, ApplicationUser<string>, UserIdentityRole>(Configuration);
+            services.AddIdentityServer<IdentityServerConfigurationDbContext, IdentityServerPersistedGrantDbContext, ApplicationUser<string>>(Configuration);
         }
 
         public virtual void RegisterAuthorization(IServiceCollection services)

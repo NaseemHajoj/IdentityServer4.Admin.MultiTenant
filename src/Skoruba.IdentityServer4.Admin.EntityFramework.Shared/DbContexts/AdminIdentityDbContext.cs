@@ -1,14 +1,13 @@
 ﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
-using Skoruba.IdentityServer4.Admin.EntityFramework.Entities;
-using Skoruba.IdentityServer4.Admin.EntityFramework.Interfaces;
 using Skoruba.IdentityServer4.Admin.EntityFramework.Shared.Constants;
 using Skoruba.IdentityServer4.Admin.EntityFramework.Shared.Entities.Identity;
+using Skoruba.IdentityServer4.Admin.EntityFramework.Shared.Interfaces;
 
 namespace Skoruba.IdentityServer4.Admin.EntityFramework.Shared.DbContexts
 {
-    public class AdminIdentityDbContext : IdentityDbContext<ApplicationUser, UserIdentityRole, string, UserIdentityUserClaim, UserIdentityUserRole, UserIdentityUserLogin, UserIdentityRoleClaim, UserIdentityUserToken>, IAdminIdentityDbContext
+    public class AdminIdentityDbContext : IdentityDbContext<ApplicationUser<string>, UserIdentityRole, string, UserIdentityUserClaim, UserIdentityUserRole, UserIdentityUserLogin, UserIdentityRoleClaim, UserIdentityUserToken>, IAdminIdentityDbContext
     {
         public AdminIdentityDbContext(DbContextOptions<AdminIdentityDbContext> options) : base(options)
         {
@@ -27,7 +26,7 @@ namespace Skoruba.IdentityServer4.Admin.EntityFramework.Shared.DbContexts
 
             new TenantEntityTypeConfiguration().Configure(builder.Entity<Tenant>());
 
-            new ApplicationUserEntityTypeConfiguration().Configure(builder.Entity<ApplicationUser>());
+            new ApplicationUserEntityTypeConfiguration<string>().Configure(builder.Entity<ApplicationUser<string>>());
         }
 
         private void ConfigureIdentityContext(ModelBuilder builder)
@@ -36,7 +35,7 @@ namespace Skoruba.IdentityServer4.Admin.EntityFramework.Shared.DbContexts
             builder.Entity<UserIdentityRoleClaim>().ToTable(TableConsts.IdentityRoleClaims);
             builder.Entity<UserIdentityUserRole>().ToTable(TableConsts.IdentityUserRoles);
 
-            builder.Entity<ApplicationUser>().ToTable(TableConsts.IdentityUsers);
+            builder.Entity<ApplicationUser<string>>().ToTable(TableConsts.IdentityUsers);
             builder.Entity<UserIdentityUserLogin>().ToTable(TableConsts.IdentityUserLogins);
             builder.Entity<UserIdentityUserClaim>().ToTable(TableConsts.IdentityUserClaims);
             builder.Entity<UserIdentityUserToken>().ToTable(TableConsts.IdentityUserTokens);

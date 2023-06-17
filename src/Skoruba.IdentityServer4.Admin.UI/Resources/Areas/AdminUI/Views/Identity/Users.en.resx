@@ -135,4 +135,10 @@
   <data name="UserName" xml:space="preserve">
     <value>UserName</value>
   </data>
+  <data name="TenantId" xml:space="preserve">
+    <value>Tenant Id</value>
+  </data>
+  <data name="TenantName" xml:space="preserve">
+    <value>Tenant Name</value>
+  </data>
 </root>

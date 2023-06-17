@@ -8,6 +8,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Content Remove="Areas\AdminUI\Views\Identity\TenantDelete.cshtml" />
+    <Content Remove="Areas\AdminUI\Views\Identity\TenantProfile.cshtml" />
+    <Content Remove="Areas\AdminUI\Views\Identity\Tenant\Section\Label.cshtml" />
+  </ItemGroup>
+
+  <ItemGroup>
     <FrameworkReference Include="Microsoft.AspNetCore.App" />
   </ItemGroup>
 
@@ -60,10 +66,13 @@
     <None Include="Areas\AdminUI\Views\Identity\Roles.cshtml" />
     <None Include="Areas\AdminUI\Views\Identity\RoleUsers.cshtml" />
     <None Include="Areas\AdminUI\Views\Identity\Role\Section\Label.cshtml" />
+    <None Include="Areas\AdminUI\Views\Identity\Tenant\Section\Label.cshtml" />
     <None Include="Areas\AdminUI\Views\Identity\UserChangePassword.cshtml" />
     <None Include="Areas\AdminUI\Views\Identity\UserClaims.cshtml" />
     <None Include="Areas\AdminUI\Views\Identity\UserClaimsDelete.cshtml" />
+    <None Include="Areas\AdminUI\Views\Identity\TenantDelete.cshtml" />
     <None Include="Areas\AdminUI\Views\Identity\UserDelete.cshtml" />
+    <None Include="Areas\AdminUI\Views\Identity\TenantProfile.cshtml" />
     <None Include="Areas\AdminUI\Views\Identity\UserProfile.cshtml" />
     <None Include="Areas\AdminUI\Views\Identity\UserProviders.cshtml" />
     <None Include="Areas\AdminUI\Views\Identity\UserProvidersDelete.cshtml" />
@@ -106,6 +115,12 @@
     <ProjectReference Include="..\Skoruba.IdentityServer4.Admin.BusinessLogic\Skoruba.IdentityServer4.Admin.BusinessLogic.csproj" />
     <ProjectReference Include="..\Skoruba.IdentityServer4.Admin.EntityFramework.Configuration\Skoruba.IdentityServer4.Admin.EntityFramework.Configuration.csproj" />
     <ProjectReference Include="..\Skoruba.IdentityServer4.Shared.Configuration\Skoruba.IdentityServer4.Shared.Configuration.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Update="Resources\Areas\AdminUI\Views\Identity\Tenants.en.resx">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
   </ItemGroup>
 
 </Project>

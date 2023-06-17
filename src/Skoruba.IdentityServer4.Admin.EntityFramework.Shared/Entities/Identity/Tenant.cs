@@ -1,12 +1,12 @@
-﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata.Builders;
-
-using Skoruba.IdentityServer4.Admin.EntityFramework.Constants;
-
-using System;
+﻿using System;
 using System.ComponentModel.DataAnnotations;
 
-namespace Skoruba.IdentityServer4.Admin.EntityFramework.Entities
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
+
+using Skoruba.IdentityServer4.Admin.EntityFramework.Shared.Constants;
+
+namespace Skoruba.IdentityServer4.Admin.EntityFramework.Shared.Entities.Identity
 {
     public class Tenant
     {

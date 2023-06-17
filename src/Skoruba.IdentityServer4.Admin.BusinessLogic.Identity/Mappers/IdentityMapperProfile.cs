@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Identity;
 using Skoruba.IdentityServer4.Admin.BusinessLogic.Identity.Dtos.Identity;
 using Skoruba.IdentityServer4.Admin.BusinessLogic.Shared.ExceptionHandling;
 using Skoruba.IdentityServer4.Admin.EntityFramework.Extensions.Common;
+using Skoruba.IdentityServer4.Admin.EntityFramework.Shared.Entities.Identity;
 
 namespace Skoruba.IdentityServer4.Admin.BusinessLogic.Identity.Mappers
 {
@@ -21,7 +22,7 @@ namespace Skoruba.IdentityServer4.Admin.BusinessLogic.Identity.Mappers
         : Profile
         where TUserDto : UserDto<TKey>
         where TRoleDto : RoleDto<TKey>
-        where TUser : IdentityUser<TKey>
+        where TUser : ApplicationUser<TKey>
         where TRole : IdentityRole<TKey>
         where TKey : IEquatable<TKey>
         where TUserClaim : IdentityUserClaim<TKey>
@@ -42,7 +43,10 @@ namespace Skoruba.IdentityServer4.Admin.BusinessLogic.Identity.Mappers
         public IdentityMapperProfile()
         {
             // entity to model
-            CreateMap<TUser, TUserDto>(MemberList.Destination);
+            CreateMap<TUser, TUserDto>(MemberList.Destination)
+                .ForMember(dest => dest.TenantName, opt => opt.MapFrom(src => src.Tenant.Name));
+
+            CreateMap<Tenant, TenantDto>(MemberList.Destination);
 
             CreateMap<UserLoginInfo, TUserProviderDto>(MemberList.Destination);
 
@@ -60,6 +64,10 @@ namespace Skoruba.IdentityServer4.Admin.BusinessLogic.Identity.Mappers
 
             CreateMap<PagedList<TUser>, TUsersDto>(MemberList.Destination)
                 .ForMember(x => x.Users,
+                    opt => opt.MapFrom(src => src.Data));
+
+            CreateMap<PagedList<Tenant>, TenantsDto>(MemberList.Destination)
+                .ForMember(x => x.Tenants,
                     opt => opt.MapFrom(src => src.Data));
 
             CreateMap<TUserClaim, TUserClaimDto>(MemberList.Destination)
@@ -109,7 +117,10 @@ namespace Skoruba.IdentityServer4.Admin.BusinessLogic.Identity.Mappers
 
             // model to entity
             CreateMap<TUserDto, TUser>(MemberList.Source)
-                .ForMember(dest => dest.Id, opt => opt.Condition(srs => srs.Id != null)); ;
+                .ForMember(dest => dest.Id, opt => opt.Condition(srs => srs.Id != null));
+
+            CreateMap<TenantDto, Tenant>(MemberList.Source)
+                .ForMember(dest => dest.Id, opt => opt.Condition(srs => srs.Id != Guid.Empty));
         }
     }
 }

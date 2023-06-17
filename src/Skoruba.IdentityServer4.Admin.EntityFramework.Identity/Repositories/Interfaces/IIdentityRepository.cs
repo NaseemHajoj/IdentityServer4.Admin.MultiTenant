@@ -1,13 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+
 using Microsoft.AspNetCore.Identity;
+
 using Skoruba.IdentityServer4.Admin.EntityFramework.Extensions.Common;
+using Skoruba.IdentityServer4.Admin.EntityFramework.Shared.Entities.Identity;
 
 namespace Skoruba.IdentityServer4.Admin.EntityFramework.Identity.Repositories.Interfaces
 {
     public interface IIdentityRepository<TUser, TRole, TKey, TUserClaim, TUserRole, TUserLogin, TRoleClaim, TUserToken>
-        where TUser : IdentityUser<TKey>
+        where TUser : ApplicationUser<TKey>
         where TRole : IdentityRole<TKey>
         where TKey : IEquatable<TKey>
         where TUserClaim : IdentityUserClaim<TKey>
@@ -37,6 +40,16 @@ namespace Skoruba.IdentityServer4.Admin.EntityFramework.Identity.Repositories.In
         Task<(IdentityResult identityResult, TKey roleId)> UpdateRoleAsync(TRole role);
 
         Task<TUser> GetUserAsync(string userId);
+
+        Task<PagedList<Tenant>> GetTenantsAsync(string search, int page = 1, int pageSize = 10);
+
+        Task<Tenant> GetTenantAsync(Guid tenantId);
+
+        Task<(IdentityResult identityResult, Guid tenantId)> CreateTenantAsync(Tenant tenant);
+
+        Task<(IdentityResult identityResult, Guid tenantId)> UpdateTenantAsync(Tenant tenant);
+
+        Task<IdentityResult> DeleteTenantAsync(Guid tenantId);
 
         Task<(IdentityResult identityResult, TKey userId)> CreateUserAsync(TUser user);
 

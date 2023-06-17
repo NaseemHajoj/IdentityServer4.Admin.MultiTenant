@@ -2,8 +2,8 @@
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Xml.Linq;
 
-namespace Skoruba.IdentityServer4.Admin.EntityFramework.Entities
-{    
+namespace Skoruba.IdentityServer4.Admin.EntityFramework.Shared.Entities
+{
     public class Log
     {
         public long Id { get; set; }

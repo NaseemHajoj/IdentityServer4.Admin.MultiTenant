@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using Microsoft.AspNetCore.Identity;
 using Skoruba.IdentityServer4.Admin.BusinessLogic.Identity.Dtos.Identity;
+using Skoruba.IdentityServer4.Admin.EntityFramework.Shared.Entities.Identity;
 
 namespace Skoruba.IdentityServer4.Admin.BusinessLogic.Identity.Mappers.Configuration
 {
@@ -18,7 +19,7 @@ namespace Skoruba.IdentityServer4.Admin.BusinessLogic.Identity.Mappers.Configura
             TUserClaimDto, TRoleClaimDto>()
             where TUserDto : UserDto<TKey>
             where TRoleDto : RoleDto<TKey>
-            where TUser : IdentityUser<TKey>
+            where TUser : ApplicationUser<TKey>
             where TRole : IdentityRole<TKey>
             where TKey : IEquatable<TKey>
             where TUserClaim : IdentityUserClaim<TKey>

@@ -14,6 +14,7 @@ using Skoruba.IdentityServer4.Admin.BusinessLogic.Shared.Dtos.Common;
 using Skoruba.IdentityServer4.Admin.BusinessLogic.Shared.ExceptionHandling;
 using Skoruba.IdentityServer4.Admin.EntityFramework.Extensions.Common;
 using Skoruba.IdentityServer4.Admin.EntityFramework.Identity.Repositories.Interfaces;
+using Skoruba.IdentityServer4.Admin.EntityFramework.Shared.Entities.Identity;
 
 namespace Skoruba.IdentityServer4.Admin.BusinessLogic.Identity.Services
 {
@@ -26,7 +27,7 @@ namespace Skoruba.IdentityServer4.Admin.BusinessLogic.Identity.Services
         TUserProviderDto, TUserProvidersDto, TUserChangePasswordDto, TRoleClaimsDto, TUserClaimDto, TRoleClaimDto>
         where TUserDto : UserDto<TKey>
         where TRoleDto : RoleDto<TKey>
-        where TUser : IdentityUser<TKey>
+        where TUser : ApplicationUser<TKey>
         where TRole : IdentityRole<TKey>
         where TKey : IEquatable<TKey>
         where TUserClaim : IdentityUserClaim<TKey>
@@ -494,6 +495,68 @@ namespace Skoruba.IdentityServer4.Admin.BusinessLogic.Identity.Services
             await AuditEventLogger.LogEventAsync(new RoleDeletedEvent<TRoleDto>(role));
 
             return HandleIdentityError(identityResult, IdentityServiceResources.RoleDeleteFailed().Description, IdentityServiceResources.IdentityErrorKey().Description, role);
+        }
+
+        public async Task<TenantsDto> GetTenantsAsync(string search, int page = 1, int pageSize = 10)
+        {
+            var pagedList = await this.IdentityRepository.GetTenantsAsync(search, page, pageSize);
+            var tenantsDto = Mapper.Map<TenantsDto>(pagedList);
+
+            await AuditEventLogger.LogEventAsync(new UsersRequestedEvent<TenantsDto>(tenantsDto));
+
+            return tenantsDto;
+        }
+
+        public async Task<TenantDto> GetTenantAsync(Guid tenantId)
+        {
+            var tenant = await this.IdentityRepository.GetTenantAsync(tenantId);
+            if (tenant == null)
+            {
+                throw new UserFriendlyErrorPageException(string.Format("Tenant {0} was not found", tenantId), "Tenant not found");
+            }
+
+            var tenantDto = Mapper.Map<TenantDto>(tenant);
+
+            await AuditEventLogger.LogEventAsync(new TenantRequestedEvent<TenantDto>(tenantDto));
+
+            return tenantDto;
+        }
+
+        public async Task<(IdentityResult identityResult, Guid tenantId)> CreateTenantAsync(TenantDto tenantDto)
+        {
+            var tenant = this.Mapper.Map<Tenant>(tenantDto);
+
+            var (identityResult, tenantId) = await this.IdentityRepository.CreateTenantAsync(tenant);
+
+            await AuditEventLogger.LogEventAsync(new TenantCreatedEvent<TenantDto>(tenantDto));
+
+            IdentityResult handleIdentityError = HandleIdentityError(identityResult, "Failed to create tenant", "tenant creation failed", tenantDto);
+
+            return (handleIdentityError, tenantId);
+        }
+
+        public async Task<(IdentityResult identityResult, Guid tenantId)> UpdateTenantAsync(TenantDto tenantDto)
+        {
+            var tenant = this.Mapper.Map<Tenant>(tenantDto);
+
+            TenantDto originalTenantDto = await this.GetTenantAsync(tenantDto.Id);
+
+            var (identityResult, tenantId) = await this.IdentityRepository.UpdateTenantAsync(tenant);
+
+            await AuditEventLogger.LogEventAsync(new TenantUpdatedEvent<TenantDto>(originalTenantDto, tenantDto));
+
+            IdentityResult handleIdentityError = HandleIdentityError(identityResult, "Failed to update tenant", "tenant update failed", tenantDto);
+
+            return (handleIdentityError, tenantId);
+        }
+
+        public async Task<IdentityResult> DeleteTenantAsync(TenantDto tenant)
+        {
+            var identityResult = await this.IdentityRepository.DeleteTenantAsync(tenant.Id);
+
+            await AuditEventLogger.LogEventAsync(new TenantDeletedEvent<TenantDto>(tenant));
+
+            return HandleIdentityError(identityResult, "Failed to delete tenant", "tenant deletion failed", tenant);
         }
     }
 }

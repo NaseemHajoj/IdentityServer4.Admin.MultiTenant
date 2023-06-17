@@ -35,6 +35,7 @@ namespace Skoruba.IdentityServer4.Admin.BusinessLogic.Identity.Services.Interfac
 
         Task<bool> ExistsRoleAsync(string roleId);
 
+        
         Task<TUsersDto> GetUsersAsync(string search, int page = 1, int pageSize = 10);
         Task<TUsersDto> GetRoleUsersAsync(string roleId, string search, int page = 1, int pageSize = 10);
         Task<TUsersDto> GetClaimUsersAsync(string claimType, string claimValue, int page = 1, int pageSize = 10);
@@ -50,6 +51,16 @@ namespace Skoruba.IdentityServer4.Admin.BusinessLogic.Identity.Services.Interfac
         Task<(IdentityResult identityResult, TKey roleId)> UpdateRoleAsync(TRoleDto role);
 
         Task<TUserDto> GetUserAsync(string userId);
+
+        Task<TenantsDto> GetTenantsAsync(string search, int page = 1, int pageSize = 10);
+
+        Task<TenantDto> GetTenantAsync(Guid tenantId);
+
+        Task<(IdentityResult identityResult, Guid tenantId)> CreateTenantAsync(TenantDto tenant);
+
+        Task<(IdentityResult identityResult, Guid tenantId)> UpdateTenantAsync(TenantDto tenant);
+
+        Task<IdentityResult> DeleteTenantAsync(TenantDto tenant);
 
         Task<(IdentityResult identityResult, TKey userId)> CreateUserAsync(TUserDto user);
 
