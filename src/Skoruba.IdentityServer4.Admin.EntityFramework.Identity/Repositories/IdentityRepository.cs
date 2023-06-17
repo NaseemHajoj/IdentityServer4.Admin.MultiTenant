@@ -17,6 +17,7 @@ using Skoruba.IdentityServer4.Admin.EntityFramework.Identity.Repositories.Interf
 using Skoruba.IdentityServer4.Admin.EntityFramework.Shared.Entities.Extensions;
 using Skoruba.IdentityServer4.Admin.EntityFramework.Shared.Entities.Identity;
 using Skoruba.IdentityServer4.Admin.EntityFramework.Shared.Enums;
+using Skoruba.IdentityServer4.Admin.EntityFramework.Shared.Identity;
 using Skoruba.IdentityServer4.Admin.EntityFramework.Shared.Interfaces;
 
 namespace Skoruba.IdentityServer4.Admin.EntityFramework.Identity.Repositories
@@ -34,14 +35,14 @@ namespace Skoruba.IdentityServer4.Admin.EntityFramework.Identity.Repositories
         where TUserToken : IdentityUserToken<TKey>
     {
         protected readonly TIdentityDbContext DbContext;
-        protected readonly UserManager<TUser> UserManager;
+        protected readonly ApplicationUserManager<TUser, TRole, TIdentityDbContext, TKey> UserManager;
         protected readonly RoleManager<TRole> RoleManager;
         protected readonly IMapper Mapper;
 
         public bool AutoSaveChanges { get; set; } = true;
 
         public IdentityRepository(TIdentityDbContext dbContext,
-            UserManager<TUser> userManager,
+            ApplicationUserManager<TUser, TRole, TIdentityDbContext, TKey> userManager,
             RoleManager<TRole> roleManager,
             IMapper mapper)
         {

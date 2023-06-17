@@ -17,6 +17,9 @@ namespace Skoruba.IdentityServer4.Admin.EntityFramework.Shared.Entities.Identity
         public string Name { get; set; }
 
         [Required]
+        public string NormalizedName { get; set; }
+
+        [Required]
         public string Email { get; set; }
 
         [Required]

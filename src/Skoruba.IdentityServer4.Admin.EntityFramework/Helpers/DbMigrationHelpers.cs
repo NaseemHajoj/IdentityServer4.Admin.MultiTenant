@@ -13,6 +13,7 @@ using Skoruba.AuditLogging.EntityFramework.DbContexts;
 using Skoruba.AuditLogging.EntityFramework.Entities;
 using Skoruba.IdentityServer4.Admin.EntityFramework.Configuration.Configuration;
 using Skoruba.IdentityServer4.Admin.EntityFramework.Shared.Entities.Identity;
+using Skoruba.IdentityServer4.Admin.EntityFramework.Shared.Identity;
 using Skoruba.IdentityServer4.Admin.EntityFramework.Shared.Interfaces;
 
 using System;
@@ -129,7 +130,7 @@ namespace Skoruba.IdentityServer4.Admin.EntityFramework.Helpers
             {
                 var identityContext = scope.ServiceProvider.GetRequiredService<TIdentityDbContext>();
                 var identityServerContext = scope.ServiceProvider.GetRequiredService<TIdentityServerDbContext>();
-                var userManager = scope.ServiceProvider.GetRequiredService<UserManager<TUser>>();
+                var userManager = scope.ServiceProvider.GetRequiredService<ApplicationUserManager<TUser, TRole, TIdentityDbContext, TKey>>();
                 var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<TRole>>();
                 var idsDataConfiguration = scope.ServiceProvider.GetRequiredService<IdentityServerData>();
                 var idDataConfiguration = scope.ServiceProvider.GetRequiredService<IdentityData>();
@@ -145,7 +146,7 @@ namespace Skoruba.IdentityServer4.Admin.EntityFramework.Helpers
         /// </summary>
         private static async Task EnsureSeedIdentityData<TIdentityDbContext, TUser, TRole, TKey>(
             TIdentityDbContext context,
-            UserManager<TUser> userManager,
+            ApplicationUserManager<TUser, TRole, TIdentityDbContext, TKey> userManager,
             RoleManager<TRole> roleManager, IdentityData identityDataConfiguration)
             where TIdentityDbContext : DbContext, IAdminIdentityDbContext
             where TUser : ApplicationUser<TKey>, new()
@@ -207,8 +208,8 @@ namespace Skoruba.IdentityServer4.Admin.EntityFramework.Helpers
                     TenantId = systemTenant.Id
                 };
 
-                var userByUserName = await userManager.FindByNameAsync(user.Username);
-                var userByEmail = await userManager.FindByEmailAsync(user.Email);
+                var userByUserName = await userManager.FindByNameAsync(user.Username, systemTenant.Name);
+                var userByEmail = await userManager.FindByEmailAsync(user.Email, systemTenant.Name);
 
                 // User is already exists in database
                 if (userByUserName != default || userByEmail != default)
