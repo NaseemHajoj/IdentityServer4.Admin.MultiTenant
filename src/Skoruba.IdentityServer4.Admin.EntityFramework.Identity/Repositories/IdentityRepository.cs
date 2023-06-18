@@ -25,7 +25,7 @@ namespace Skoruba.IdentityServer4.Admin.EntityFramework.Identity.Repositories
     public class IdentityRepository<TIdentityDbContext, TUser, TRole, TKey, TUserClaim, TUserRole, TUserLogin, TRoleClaim, TUserToken>
         : IIdentityRepository<TUser, TRole, TKey, TUserClaim, TUserRole, TUserLogin, TRoleClaim, TUserToken>
         where TIdentityDbContext : IdentityDbContext<TUser, TRole, TKey, TUserClaim, TUserRole, TUserLogin, TRoleClaim, TUserToken>, IAdminIdentityDbContext
-        where TUser : ApplicationUser<TKey>
+        where TUser : ApplicationUser<TKey>, new()
         where TRole : IdentityRole<TKey>
         where TKey : IEquatable<TKey>
         where TUserClaim : IdentityUserClaim<TKey>
@@ -35,14 +35,14 @@ namespace Skoruba.IdentityServer4.Admin.EntityFramework.Identity.Repositories
         where TUserToken : IdentityUserToken<TKey>
     {
         protected readonly TIdentityDbContext DbContext;
-        protected readonly ApplicationUserManager<TUser, TRole, TIdentityDbContext, TKey> UserManager;
+        protected readonly ApplicationUserManager<TUser, TKey> UserManager;
         protected readonly RoleManager<TRole> RoleManager;
         protected readonly IMapper Mapper;
 
         public bool AutoSaveChanges { get; set; } = true;
 
         public IdentityRepository(TIdentityDbContext dbContext,
-            ApplicationUserManager<TUser, TRole, TIdentityDbContext, TKey> userManager,
+            ApplicationUserManager<TUser, TKey> userManager,
             RoleManager<TRole> roleManager,
             IMapper mapper)
         {

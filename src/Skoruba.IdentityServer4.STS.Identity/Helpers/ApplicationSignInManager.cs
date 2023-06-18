@@ -10,6 +10,10 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+
+using Skoruba.IdentityServer4.Admin.EntityFramework.Shared.Entities.Identity;
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
@@ -17,8 +21,9 @@ using System.Threading.Tasks;
 
 namespace Skoruba.IdentityServer4.STS.Identity.Helpers
 {
-    public class ApplicationSignInManager<TUser> : SignInManager<TUser>
-        where TUser : class
+    public class ApplicationSignInManager<TUser, TKey> : SignInManager<TUser>
+        where TUser : ApplicationUser<TKey>
+        where TKey : IEquatable<TKey>
     {
         private readonly IHttpContextAccessor _contextAccessor;
 

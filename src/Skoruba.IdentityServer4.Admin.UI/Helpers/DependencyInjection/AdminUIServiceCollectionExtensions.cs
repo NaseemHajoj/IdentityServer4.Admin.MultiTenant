@@ -38,7 +38,7 @@ namespace Microsoft.Extensions.DependencyInjection
             where TLogDbContext : DbContext, IAdminLogDbContext
             where TAuditLogDbContext : DbContext, IAuditLoggingDbContext<TAuditLog>
             where TDataProtectionDbContext : DbContext, IDataProtectionKeyContext
-            where TUser : ApplicationUser<string>
+            where TUser : ApplicationUser<string>, new()
             where TAuditLog : AuditLog, new()
             => AddIdentityServer4AdminUI<TIdentityDbContext, TIdentityServerDbContext, TPersistedGrantDbContext, TLogDbContext, TAuditLogDbContext, TAuditLog, TDataProtectionDbContext, TUser, IdentityRole, IdentityUserClaim<string>,
                 IdentityUserRole<string>, IdentityUserLogin<string>, IdentityRoleClaim<string>,
@@ -63,7 +63,7 @@ namespace Microsoft.Extensions.DependencyInjection
             where TLogDbContext : DbContext, IAdminLogDbContext
             where TAuditLogDbContext : DbContext, IAuditLoggingDbContext<TAuditLog>
             where TDataProtectionDbContext : DbContext, IDataProtectionKeyContext
-            where TUser : ApplicationUser<TKey>
+            where TUser : ApplicationUser<TKey>, new()
             where TRole : IdentityRole<TKey>
             where TUserClaim : IdentityUserClaim<TKey>
             where TUserRole : IdentityUserRole<TKey>
@@ -114,12 +114,12 @@ namespace Microsoft.Extensions.DependencyInjection
             // Add Asp.Net Core Identity Configuration and OpenIdConnect auth as well
             if (!options.Testing.IsStaging)
             {
-                services.AddAuthenticationServices<TIdentityDbContext, TUser, TRole>
+                services.AddAuthenticationServices<TIdentityDbContext, TUser, TRole, TKey>
                         (options.Admin, options.IdentityConfigureAction, options.Security.AuthenticationBuilderAction);
             }
             else
             {
-                services.AddAuthenticationServicesStaging<TIdentityDbContext, TUser, TRole>();
+                services.AddAuthenticationServicesStaging<TIdentityDbContext, TUser, TRole, TKey>();
             }
 
             // Add HSTS options

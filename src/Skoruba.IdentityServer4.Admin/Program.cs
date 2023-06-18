@@ -67,7 +67,7 @@ namespace Skoruba.IdentityServer4.Admin
             return await DbMigrationHelpers
                 .ApplyDbMigrationsWithDataSeedAsync<IdentityServerConfigurationDbContext, AdminIdentityDbContext,
                     IdentityServerPersistedGrantDbContext, AdminLogDbContext, AdminAuditLogDbContext,
-                    IdentityServerDataProtectionDbContext, ApplicationUser<string>, UserIdentityRole, string>(host,
+                    IdentityServerDataProtectionDbContext, ApplicationUser<string>, UserIdentityRole>(host,
                     applyDbMigrationWithDataSeedFromProgramArguments, seedConfiguration, databaseMigrationsConfiguration);
         }
 

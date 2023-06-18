@@ -18,6 +18,7 @@ using Skoruba.IdentityServer4.Admin.EntityFramework.Identity.Repositories;
 using Skoruba.IdentityServer4.Admin.EntityFramework.Identity.Repositories.Interfaces;
 using Skoruba.IdentityServer4.Admin.EntityFramework.Shared.DbContexts;
 using Skoruba.IdentityServer4.Admin.EntityFramework.Shared.Entities.Identity;
+using Skoruba.IdentityServer4.Admin.EntityFramework.Shared.Identity;
 using Skoruba.IdentityServer4.Admin.UnitTests.Mocks;
 using Xunit;
 
@@ -44,7 +45,7 @@ namespace Skoruba.IdentityServer4.Admin.UnitTests.Services
         private IIdentityRepository<ApplicationUser<string>, UserIdentityRole, string,
             UserIdentityUserClaim, UserIdentityUserRole, UserIdentityUserLogin, UserIdentityRoleClaim,
             UserIdentityUserToken> GetIdentityRepository(AdminIdentityDbContext dbContext,
-            UserManager<ApplicationUser<string>> userManager,
+            ApplicationUserManager<ApplicationUser<string>, string> userManager,
             RoleManager<UserIdentityRole> roleManager,
             IMapper mapper)
         {
@@ -83,9 +84,9 @@ namespace Skoruba.IdentityServer4.Admin.UnitTests.Services
                 .CreateMapper();
         }
 
-        private UserManager<ApplicationUser<string>> GetTestUserManager(AdminIdentityDbContext context)
+        private ApplicationUserManager<ApplicationUser<string>, string> GetTestUserManager(AdminIdentityDbContext context)
         {
-            var testUserManager = IdentityMock.TestUserManager(new UserStore<ApplicationUser<string>, UserIdentityRole, AdminIdentityDbContext, string, UserIdentityUserClaim, UserIdentityUserRole, UserIdentityUserLogin, UserIdentityUserToken, UserIdentityRoleClaim>(context, new IdentityErrorDescriber()));
+            var testUserManager = IdentityMock.TestUserManager(new ApplicationUserStore<ApplicationUser<string>, string>(context, new IdentityErrorDescriber()));
 
             return testUserManager;
         }

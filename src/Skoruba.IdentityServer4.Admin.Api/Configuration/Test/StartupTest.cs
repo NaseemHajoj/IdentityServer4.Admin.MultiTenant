@@ -9,6 +9,7 @@ using Skoruba.IdentityServer4.Admin.Api.Helpers;
 using Skoruba.IdentityServer4.Admin.Api.Middlewares;
 using Skoruba.IdentityServer4.Admin.EntityFramework.Shared.DbContexts;
 using Skoruba.IdentityServer4.Admin.EntityFramework.Shared.Entities.Identity;
+using Skoruba.IdentityServer4.Admin.EntityFramework.Shared.Identity;
 
 namespace Skoruba.IdentityServer4.Admin.Api.Configuration.Test
 {
@@ -28,6 +29,8 @@ namespace Skoruba.IdentityServer4.Admin.Api.Configuration.Test
             services
                 .AddIdentity<ApplicationUser<string>, UserIdentityRole>(options => Configuration.GetSection(nameof(IdentityOptions)).Bind(options))
                 .AddEntityFrameworkStores<AdminIdentityDbContext>()
+                .AddUserStore<ApplicationUserStore<ApplicationUser<string>, string>>()
+                .AddUserManager<ApplicationUserManager<ApplicationUser<string>, string>>()
                 .AddDefaultTokenProviders();
 
             services.AddAuthentication(options =>

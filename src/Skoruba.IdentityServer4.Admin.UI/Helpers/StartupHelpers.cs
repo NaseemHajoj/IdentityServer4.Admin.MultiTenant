@@ -41,6 +41,8 @@ using Skoruba.IdentityServer4.Admin.EntityFramework.Configuration.SqlServer;
 using Skoruba.IdentityServer4.Admin.EntityFramework.Helpers;
 using Skoruba.IdentityServer4.Admin.EntityFramework.Repositories;
 using Skoruba.IdentityServer4.Admin.EntityFramework.Repositories.Interfaces;
+using Skoruba.IdentityServer4.Admin.EntityFramework.Shared.Entities.Identity;
+using Skoruba.IdentityServer4.Admin.EntityFramework.Shared.Identity;
 using Skoruba.IdentityServer4.Admin.EntityFramework.Shared.Interfaces;
 using Skoruba.IdentityServer4.Admin.UI.Configuration;
 using Skoruba.IdentityServer4.Admin.UI.Configuration.ApplicationParts;
@@ -307,15 +309,20 @@ namespace Skoruba.IdentityServer4.Admin.UI.Helpers
                 });
         }
 
-        public static void AddAuthenticationServicesStaging<TContext, TUserIdentity, TUserIdentityRole>(
+        public static void AddAuthenticationServicesStaging<TContext, TUserIdentity, TUserIdentityRole, TKey>(
             this IServiceCollection services)
-            where TContext : DbContext where TUserIdentity : class where TUserIdentityRole : class
+            where TContext : DbContext 
+            where TUserIdentity : ApplicationUser<TKey>, new()
+            where TUserIdentityRole : class
+            where TKey : IEquatable<TKey>
         {
             services.AddIdentity<TUserIdentity, TUserIdentityRole>(options =>
             {
                 options.User.RequireUniqueEmail = true;
             })
                 .AddEntityFrameworkStores<TContext>()
+                .AddUserStore<ApplicationUserStore<TUserIdentity, TKey>>()
+                .AddUserManager<ApplicationUserManager<TUserIdentity, TKey>>()
                 .AddDefaultTokenProviders();
 
             services.AddAuthentication(options =>
@@ -341,9 +348,12 @@ namespace Skoruba.IdentityServer4.Admin.UI.Helpers
         /// <typeparam name="TUserIdentityRole"></typeparam>
         /// <param name="services"></param>
         /// <param name="adminConfiguration"></param>
-        public static void AddAuthenticationServices<TContext, TUserIdentity, TUserIdentityRole>(this IServiceCollection services,
+        public static void AddAuthenticationServices<TContext, TUserIdentity, TUserIdentityRole, TKey>(this IServiceCollection services,
             AdminConfiguration adminConfiguration, Action<IdentityOptions> identityOptionsAction, Action<AuthenticationBuilder> authenticationBuilderAction)
-            where TContext : DbContext where TUserIdentity : class where TUserIdentityRole : class
+            where TContext : DbContext 
+            where TUserIdentity : ApplicationUser<TKey>, new()
+            where TUserIdentityRole : class
+            where TKey : IEquatable<TKey>
         {
             services.Configure<CookiePolicyOptions>(options =>
             {
@@ -358,7 +368,19 @@ namespace Skoruba.IdentityServer4.Admin.UI.Helpers
             services
                 .AddIdentity<TUserIdentity, TUserIdentityRole>(identityOptionsAction)
                 .AddEntityFrameworkStores<TContext>()
+                .AddUserStore<ApplicationUserStore<TUserIdentity, TKey>>()
+                .AddUserManager<ApplicationUserManager<TUserIdentity, TKey>>()
                 .AddDefaultTokenProviders();
+
+            services.AddScoped<ApplicationUserStore<ApplicationUser<string>, string>>(x =>
+            {
+                return (ApplicationUserStore<ApplicationUser<string>, string>)x.GetRequiredService<IUserStore<ApplicationUser<string>>>();
+            });
+
+            services.AddScoped<ApplicationUserManager<ApplicationUser<string>, string>>(x =>
+            {
+                return (ApplicationUserManager<ApplicationUser<string>, string>)x.GetRequiredService<UserManager<ApplicationUser<string>>>();
+            });
 
             var authenticationBuilder = services.AddAuthentication(options =>
             {

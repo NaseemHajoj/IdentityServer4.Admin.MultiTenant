@@ -26,6 +26,8 @@ using Skoruba.IdentityServer4.Admin.EntityFramework.Configuration.MySql;
 using Skoruba.IdentityServer4.Admin.EntityFramework.Configuration.PostgreSQL;
 using Skoruba.IdentityServer4.Admin.EntityFramework.Configuration.SqlServer;
 using Skoruba.IdentityServer4.Admin.EntityFramework.Helpers;
+using Skoruba.IdentityServer4.Admin.EntityFramework.Shared.Entities.Identity;
+using Skoruba.IdentityServer4.Admin.EntityFramework.Shared.Identity;
 using Skoruba.IdentityServer4.Admin.EntityFramework.Shared.Interfaces;
 using Skoruba.IdentityServer4.Shared.Configuration.Authentication;
 using Skoruba.IdentityServer4.Shared.Configuration.Configuration.Identity;
@@ -266,9 +268,10 @@ namespace Skoruba.IdentityServer4.STS.Identity.Helpers
         /// <typeparam name="TUserIdentityRole">User Identity Role class</typeparam>
         /// <param name="services"></param>
         /// <param name="configuration"></param>
-        public static void AddAuthenticationServices<TIdentityDbContext, TUserIdentity, TUserIdentityRole>(this IServiceCollection services, IConfiguration configuration) where TIdentityDbContext : DbContext
-            where TUserIdentity : class
+        public static void AddAuthenticationServices<TIdentityDbContext, TUserIdentity, TUserIdentityRole, TKey>(this IServiceCollection services, IConfiguration configuration) where TIdentityDbContext : DbContext
+            where TUserIdentity : ApplicationUser<TKey>, new()
             where TUserIdentityRole : class
+            where TKey : IEquatable<TKey>
         {
             var loginConfiguration = GetLoginConfiguration(configuration);
             var registrationConfiguration = GetRegistrationConfiguration(configuration);
@@ -278,11 +281,23 @@ namespace Skoruba.IdentityServer4.STS.Identity.Helpers
                 .AddSingleton(registrationConfiguration)
                 .AddSingleton(loginConfiguration)
                 .AddSingleton(identityOptions)
-                .AddScoped<ApplicationSignInManager<TUserIdentity>>()
-                .AddScoped<UserResolver<TUserIdentity>>()
+                .AddScoped<ApplicationSignInManager<TUserIdentity, TKey>>()
+                .AddScoped<UserResolver<TUserIdentity, TKey>>()
                 .AddIdentity<TUserIdentity, TUserIdentityRole>(options => configuration.GetSection(nameof(IdentityOptions)).Bind(options))
                 .AddEntityFrameworkStores<TIdentityDbContext>()
+                .AddUserStore<ApplicationUserStore<TUserIdentity, TKey>>()
+                .AddUserManager<ApplicationUserManager<TUserIdentity, TKey>>()
                 .AddDefaultTokenProviders();
+
+            services.AddScoped<ApplicationUserStore<ApplicationUser<string>, string>>(x =>
+            {
+                return (ApplicationUserStore<ApplicationUser<string>, string>)x.GetRequiredService<IUserStore<ApplicationUser<string>>>();
+            });
+
+            services.AddScoped<ApplicationUserManager<ApplicationUser<string>, string>>(x =>
+            {
+                return (ApplicationUserManager<ApplicationUser<string>, string>)x.GetRequiredService<UserManager<ApplicationUser<string>>>();
+            });
 
             services.Configure<CookiePolicyOptions>(options =>
             {

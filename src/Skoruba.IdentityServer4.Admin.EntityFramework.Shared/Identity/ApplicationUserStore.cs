@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
+using Skoruba.IdentityServer4.Admin.EntityFramework.Shared.DbContexts;
 using Skoruba.IdentityServer4.Admin.EntityFramework.Shared.Entities.Identity;
 
 namespace Skoruba.IdentityServer4.Admin.EntityFramework.Shared.Identity
@@ -14,14 +15,12 @@ namespace Skoruba.IdentityServer4.Admin.EntityFramework.Shared.Identity
     /// Extending the <see cref="UserStore{TUser}"/> class to make store aware of tenant.
     /// </summary>
     /// <typeparam name="TUser"></typeparam>
-    public class ApplicationUserStore<TUser, TRole, TContext, TKey> : UserStore<TUser, TRole, TContext, TKey>
-        where TUser : ApplicationUser<TKey>
-        where TRole : IdentityRole<TKey>
-        where TContext : DbContext
+    public class ApplicationUserStore<TUser, TKey> : UserStore<TUser, IdentityRole<TKey>, AdminIdentityDbContext, TKey>
+        where TUser : ApplicationUser<TKey>, new()
         where TKey : IEquatable<TKey>
     {
         public ApplicationUserStore(
-            TContext context, 
+            AdminIdentityDbContext context, 
             IdentityErrorDescriber describer = null) 
             : base(context, describer)
         {

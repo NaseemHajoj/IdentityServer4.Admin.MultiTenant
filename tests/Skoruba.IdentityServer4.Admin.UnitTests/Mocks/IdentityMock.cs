@@ -7,6 +7,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Moq;
 using Skoruba.IdentityServer4.Admin.EntityFramework.Shared.Entities.Identity;
+using Skoruba.IdentityServer4.Admin.EntityFramework.Shared.Identity;
 
 namespace Skoruba.IdentityServer4.Admin.UnitTests.Mocks
 {
@@ -31,9 +32,11 @@ namespace Skoruba.IdentityServer4.Admin.UnitTests.Mocks
         }
 
         // NOTE: These mocks are from - https://github.com/aspnet/Identity/blob/master/test/Shared/MockHelpers.cs
-        public static UserManager<TUser> TestUserManager<TUser>(IUserStore<TUser> store = null) where TUser : class
+        public static ApplicationUserManager<TUser, TKey> TestUserManager<TUser, TKey>(ApplicationUserStore<TUser, TKey> store = null) 
+            where TUser : ApplicationUser<TKey>, new()
+            where TKey : IEquatable<TKey>
         {
-            store = store ?? new Mock<IUserStore<TUser>>().Object;
+            store = store ?? new Mock<ApplicationUserStore<TUser, TKey>>().Object;
             var options = new Mock<IOptions<IdentityOptions>>();
             var idOptions = new IdentityOptions { Lockout = { AllowedForNewUsers = false } };
             options.Setup(o => o.Value).Returns(idOptions);
@@ -41,7 +44,7 @@ namespace Skoruba.IdentityServer4.Admin.UnitTests.Mocks
             var validator = new Mock<IUserValidator<TUser>>();
             userValidators.Add(validator.Object);
             var pwdValidators = new List<PasswordValidator<TUser>> { new PasswordValidator<TUser>() };
-            var userManager = new UserManager<TUser>(store, options.Object, new PasswordHasher<TUser>(),
+            var userManager = new ApplicationUserManager<TUser, TKey>(store, options.Object, new PasswordHasher<TUser>(),
                 userValidators, pwdValidators, new UpperInvariantLookupNormalizer(),
                 new IdentityErrorDescriber(), null,
                 new Mock<ILogger<UserManager<TUser>>>().Object);

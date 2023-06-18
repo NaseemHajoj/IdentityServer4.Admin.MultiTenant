@@ -24,6 +24,9 @@ using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Logging;
+
+using Skoruba.IdentityServer4.Admin.EntityFramework.Shared.Entities.Identity;
+using Skoruba.IdentityServer4.Admin.EntityFramework.Shared.Identity;
 using Skoruba.IdentityServer4.Shared.Configuration.Configuration.Identity;
 using Skoruba.IdentityServer4.STS.Identity.Configuration;
 using Skoruba.IdentityServer4.STS.Identity.Helpers;
@@ -35,12 +38,12 @@ namespace Skoruba.IdentityServer4.STS.Identity.Controllers
     [SecurityHeaders]
     [Authorize]
     public class AccountController<TUser, TKey> : Controller
-        where TUser : IdentityUser<TKey>, new()
+        where TUser : ApplicationUser<TKey>, new()
         where TKey : IEquatable<TKey>
     {
-        private readonly UserResolver<TUser> _userResolver;
-        private readonly UserManager<TUser> _userManager;
-        private readonly ApplicationSignInManager<TUser> _signInManager;
+        private readonly UserResolver<TUser, TKey> _userResolver;
+        private readonly ApplicationUserManager<TUser, TKey> _userManager;
+        private readonly ApplicationSignInManager<TUser, TKey> _signInManager;
         private readonly IIdentityServerInteractionService _interaction;
         private readonly IClientStore _clientStore;
         private readonly IAuthenticationSchemeProvider _schemeProvider;
@@ -53,9 +56,9 @@ namespace Skoruba.IdentityServer4.STS.Identity.Controllers
         private readonly ILogger<AccountController<TUser, TKey>> _logger;
 
         public AccountController(
-            UserResolver<TUser> userResolver,
-            UserManager<TUser> userManager,
-            ApplicationSignInManager<TUser> signInManager,
+            UserResolver<TUser, TKey> userResolver,
+            ApplicationUserManager<TUser, TKey> userManager,
+            ApplicationSignInManager<TUser, TKey> signInManager,
             IIdentityServerInteractionService interaction,
             IClientStore clientStore,
             IAuthenticationSchemeProvider schemeProvider,

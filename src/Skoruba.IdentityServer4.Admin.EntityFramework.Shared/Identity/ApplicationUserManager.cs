@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 
 using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -12,16 +11,14 @@ using Skoruba.IdentityServer4.Admin.EntityFramework.Shared.Entities.Identity;
 
 namespace Skoruba.IdentityServer4.Admin.EntityFramework.Shared.Identity
 {
-    public class ApplicationUserManager<TUser, TRole, TContext, TKey> : UserManager<TUser>
-        where TUser : ApplicationUser<TKey>
-        where TRole : IdentityRole<TKey>
-        where TContext : DbContext
+    public class ApplicationUserManager<TUser, TKey> : UserManager<TUser>
+        where TUser : ApplicationUser<TKey>, new()
         where TKey : IEquatable<TKey>
     {
         private readonly IServiceProvider _services;
 
         public ApplicationUserManager(
-            ApplicationUserStore<TUser, TRole, TContext, TKey> store, 
+            ApplicationUserStore<TUser, TKey> store, 
             IOptions<IdentityOptions> optionsAccessor, 
             IPasswordHasher<TUser> passwordHasher, 
             IEnumerable<IUserValidator<TUser>> userValidators, 
@@ -35,20 +32,10 @@ namespace Skoruba.IdentityServer4.Admin.EntityFramework.Shared.Identity
             this._services = services;
         }
 
-        public override Task<TUser> FindByEmailAsync(string email)
-        {
-            throw new InvalidOperationException("Operation is not supported, use the one overloaded with tenant");
-        }
-
-        public override Task<TUser> FindByNameAsync(string userName)
-        {
-            throw new InvalidOperationException("Operation is not supported, use the one overloaded with tenant");
-        }
-
         public async Task<TUser> FindByEmailAsync(string email, string tenant)
         {
             this.ThrowIfDisposed();
-            var store = this.Store as ApplicationUserStore<TUser, TRole, TContext, TKey>;
+            var store = this.GetApplicationUserStore();
 
             email = NormalizeEmail(email);
             var user = await store.FindByEmailAsync(email, tenant, this.CancellationToken);
@@ -83,9 +70,12 @@ namespace Skoruba.IdentityServer4.Admin.EntityFramework.Shared.Identity
                 throw new ArgumentNullException(nameof(userName));
             }
 
-            var store = this.Store as ApplicationUserStore<TUser, TRole, TContext, TKey>;
+            return this.GetApplicationUserStore().FindByNameAsync(userName, tenant);
+        }
 
-            return store.FindByNameAsync(userName, tenant);
+        private ApplicationUserStore<TUser, TKey> GetApplicationUserStore()
+        {
+            return this.Store as ApplicationUserStore<TUser, TKey>;
         }
     }
 }

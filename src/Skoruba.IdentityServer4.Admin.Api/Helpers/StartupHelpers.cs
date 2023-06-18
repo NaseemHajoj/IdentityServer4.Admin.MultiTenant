@@ -182,16 +182,29 @@ namespace Skoruba.IdentityServer4.Admin.Api.Helpers
             IConfiguration configuration)
             where TIdentityDbContext : DbContext
             where TRole : class
-            where TUser : ApplicationUser<string>, new()
+            where TUser : ApplicationUser<TKey>, new()
+            where TKey : IEquatable<TKey>
         {
             var adminApiConfiguration = configuration.GetSection(nameof(AdminApiConfiguration)).Get<AdminApiConfiguration>();
 
             services
                 .AddIdentity<TUser, TRole>(options => configuration.GetSection(nameof(IdentityOptions)).Bind(options))
                 .AddEntityFrameworkStores<TIdentityDbContext>()
-                .AddUserStore<ApplicationUserStore<TUser>>()
-                .AddUserManager<ApplicationUserManager<TUser>>()
+                .AddUserStore<ApplicationUserStore<TUser, TKey>>()
+                .AddUserManager<ApplicationUserManager<TUser, TKey>>()
                 .AddDefaultTokenProviders();
+
+
+            services.AddScoped<ApplicationUserStore<ApplicationUser<string>, string>>(x =>
+            {
+                return (ApplicationUserStore<ApplicationUser<string>, string>)x.GetRequiredService<IUserStore<ApplicationUser<string>>>();
+                
+            });
+
+            services.AddScoped<ApplicationUserManager<ApplicationUser<string>, string>>(x =>
+            {
+                return (ApplicationUserManager<ApplicationUser<string>, string>)x.GetRequiredService<UserManager<ApplicationUser<string>>>();
+            });
 
             services.AddAuthentication(options =>
                 {

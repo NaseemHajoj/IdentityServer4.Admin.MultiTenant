@@ -30,6 +30,8 @@ using Skoruba.IdentityServer4.Admin.UI.Helpers;
 using Skoruba.IdentityServer4.Admin.UI.Helpers.Localization;
 using Xunit;
 using System.Security.Claims;
+using Skoruba.IdentityServer4.Admin.EntityFramework.Shared.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 
 namespace Skoruba.IdentityServer4.Admin.UnitTests.Controllers
 {
@@ -624,7 +626,12 @@ namespace Skoruba.IdentityServer4.Admin.UnitTests.Controllers
 
             services.AddIdentity<ApplicationUser<string>, UserIdentityRole>()
                 .AddEntityFrameworkStores<AdminIdentityDbContext>()
+                .AddUserStore<ApplicationUserStore<ApplicationUser<string>, string>>()
+                .AddUserManager<ApplicationUserManager<ApplicationUser<string>, string>>()
                 .AddDefaultTokenProviders();
+
+            services.AddScoped(typeof(IUserStore<>).MakeGenericType(typeof(ApplicationUser<string>), typeof(string)), typeof(ApplicationUserStore<ApplicationUser<string>, string>));
+
 
             services.AddSession();
 
