@@ -21,13 +21,13 @@ using System.Threading.Tasks;
 
 namespace Skoruba.IdentityServer4.STS.Identity.Helpers
 {
-    public class ApplicationSignInManager<TUser, TKey> : SignInManager<TUser>
-        where TUser : ApplicationUser<TKey>
-        where TKey : IEquatable<TKey>
+    public class ApplicationSignInManager<TUser> : SignInManager<TUser>
+        where TUser : ApplicationUser<string>
     {
         private readonly IHttpContextAccessor _contextAccessor;
 
-        public ApplicationSignInManager(UserManager<TUser> userManager,
+        public ApplicationSignInManager(
+            UserManager<TUser> userManager,
             IHttpContextAccessor contextAccessor,
             IUserClaimsPrincipalFactory<TUser> claimsFactory,
             IOptions<IdentityOptions> optionsAccessor,

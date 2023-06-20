@@ -13,6 +13,7 @@ using Skoruba.IdentityServer4.STS.Identity.Configuration.Interfaces;
 using Skoruba.IdentityServer4.STS.Identity.Helpers;
 using System;
 using Skoruba.IdentityServer4.Shared.Configuration.Helpers;
+using Microsoft.AspNetCore.Identity;
 
 namespace Skoruba.IdentityServer4.STS.Identity
 {
@@ -99,7 +100,7 @@ namespace Skoruba.IdentityServer4.STS.Identity
 
         public virtual void RegisterAuthentication(IServiceCollection services)
         {
-            services.AddAuthenticationServices<AdminIdentityDbContext, ApplicationUser<string>, UserIdentityRole, string>(Configuration);
+            services.AddAuthenticationServices<AdminIdentityDbContext, ApplicationUser<string>, IdentityRole>(Configuration);
             services.AddIdentityServer<IdentityServerConfigurationDbContext, IdentityServerPersistedGrantDbContext, ApplicationUser<string>>(Configuration);
         }
 

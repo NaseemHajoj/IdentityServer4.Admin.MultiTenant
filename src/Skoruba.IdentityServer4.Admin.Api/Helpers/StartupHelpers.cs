@@ -87,30 +87,29 @@ namespace Skoruba.IdentityServer4.Admin.Api.Helpers
         /// </summary>
         /// <param name="services"></param>
         public static void AddMvcServices<TUserDto, TRoleDto,
-            TUser, TRole, TKey, TUserClaim, TUserRole, TUserLogin, TRoleClaim, TUserToken,
+            TUser, TRole, TUserClaim, TUserRole, TUserLogin, TRoleClaim, TUserToken,
             TUsersDto, TRolesDto, TUserRolesDto, TUserClaimsDto,
             TUserProviderDto, TUserProvidersDto, TUserChangePasswordDto, TRoleClaimsDto, TUserClaimDto, TRoleClaimDto>(
             this IServiceCollection services)
-            where TUserDto : UserDto<TKey>, new()
-            where TRoleDto : RoleDto<TKey>, new()
-            where TUser : IdentityUser<TKey>
-            where TRole : IdentityRole<TKey>
-            where TKey : IEquatable<TKey>
-            where TUserClaim : IdentityUserClaim<TKey>
-            where TUserRole : IdentityUserRole<TKey>
-            where TUserLogin : IdentityUserLogin<TKey>
-            where TRoleClaim : IdentityRoleClaim<TKey>
-            where TUserToken : IdentityUserToken<TKey>
-            where TUsersDto : UsersDto<TUserDto, TKey>
-            where TRolesDto : RolesDto<TRoleDto, TKey>
-            where TUserRolesDto : UserRolesDto<TRoleDto, TKey>
-            where TUserClaimsDto : UserClaimsDto<TUserClaimDto, TKey>
-            where TUserProviderDto : UserProviderDto<TKey>
-            where TUserProvidersDto : UserProvidersDto<TUserProviderDto, TKey>
-            where TUserChangePasswordDto : UserChangePasswordDto<TKey>
-            where TRoleClaimsDto : RoleClaimsDto<TRoleClaimDto, TKey>
-            where TUserClaimDto : UserClaimDto<TKey>
-            where TRoleClaimDto : RoleClaimDto<TKey>
+            where TUserDto : UserDto<string>, new()
+            where TRoleDto : RoleDto<string>, new()
+            where TUser : IdentityUser<string>
+            where TRole : IdentityRole<string>
+            where TUserClaim : IdentityUserClaim<string>
+            where TUserRole : IdentityUserRole<string>
+            where TUserLogin : IdentityUserLogin<string>
+            where TRoleClaim : IdentityRoleClaim<string>
+            where TUserToken : IdentityUserToken<string>
+            where TUsersDto : UsersDto<TUserDto, string>
+            where TRolesDto : RolesDto<TRoleDto, string>
+            where TUserRolesDto : UserRolesDto<TRoleDto, string>
+            where TUserClaimsDto : UserClaimsDto<TUserClaimDto, string>
+            where TUserProviderDto : UserProviderDto<string>
+            where TUserProvidersDto : UserProvidersDto<TUserProviderDto, string>
+            where TUserChangePasswordDto : UserChangePasswordDto<string>
+            where TRoleClaimsDto : RoleClaimsDto<TRoleClaimDto, string>
+            where TUserClaimDto : UserClaimDto<string>
+            where TRoleClaimDto : RoleClaimDto<string>
         {
             services.AddLocalization(opts => { opts.ResourcesPath = ConfigurationConsts.ResourcesPath; });
 
@@ -122,7 +121,7 @@ namespace Skoruba.IdentityServer4.Admin.Api.Helpers
                 {
                     m.FeatureProviders.Add(
                         new GenericTypeControllerFeatureProvider<TUserDto, TRoleDto,
-                            TUser, TRole, TKey, TUserClaim, TUserRole, TUserLogin, TRoleClaim, TUserToken,
+                            TUser, TRole, TUserClaim, TUserRole, TUserLogin, TRoleClaim, TUserToken,
                             TUsersDto, TRolesDto, TUserRolesDto, TUserClaimsDto,
                             TUserProviderDto, TUserProvidersDto, TUserChangePasswordDto, TRoleClaimsDto, TUserClaimDto, TRoleClaimDto>());
                 });
@@ -178,33 +177,20 @@ namespace Skoruba.IdentityServer4.Admin.Api.Helpers
         /// <typeparam name="TRole">Entity with Role</typeparam>
         /// <param name="services"></param>
         /// <param name="configuration"></param>
-        public static void AddApiAuthentication<TIdentityDbContext, TUser, TRole, TKey>(this IServiceCollection services,
+        public static void AddApiAuthentication<TContext, TUserIdentity, TUserIdentityRole>(this IServiceCollection services,
             IConfiguration configuration)
-            where TIdentityDbContext : DbContext
-            where TRole : class
-            where TUser : ApplicationUser<TKey>, new()
-            where TKey : IEquatable<TKey>
+            where TContext : DbContext
+            where TUserIdentityRole : IdentityRole<string>
+            where TUserIdentity : ApplicationUser<string>, new()
         {
             var adminApiConfiguration = configuration.GetSection(nameof(AdminApiConfiguration)).Get<AdminApiConfiguration>();
 
             services
-                .AddIdentity<TUser, TRole>(options => configuration.GetSection(nameof(IdentityOptions)).Bind(options))
-                .AddEntityFrameworkStores<TIdentityDbContext>()
-                .AddUserStore<ApplicationUserStore<TUser, TKey>>()
-                .AddUserManager<ApplicationUserManager<TUser, TKey>>()
+                .AddIdentity<TUserIdentity, TUserIdentityRole>(options => configuration.GetSection(nameof(IdentityOptions)).Bind(options))
+                .AddEntityFrameworkStores<TContext>()
+                .AddUserStore<ApplicationUserStore<TUserIdentity>>()
+                .AddUserManager<ApplicationUserManager<TUserIdentity>>()
                 .AddDefaultTokenProviders();
-
-
-            services.AddScoped<ApplicationUserStore<ApplicationUser<string>, string>>(x =>
-            {
-                return (ApplicationUserStore<ApplicationUser<string>, string>)x.GetRequiredService<IUserStore<ApplicationUser<string>>>();
-                
-            });
-
-            services.AddScoped<ApplicationUserManager<ApplicationUser<string>, string>>(x =>
-            {
-                return (ApplicationUserManager<ApplicationUser<string>, string>)x.GetRequiredService<UserManager<ApplicationUser<string>>>();
-            });
 
             services.AddAuthentication(options =>
                 {

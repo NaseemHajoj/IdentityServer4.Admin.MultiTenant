@@ -6,30 +6,29 @@ using Skoruba.IdentityServer4.Admin.BusinessLogic.Identity.Dtos.Identity;
 
 namespace Skoruba.IdentityServer4.Admin.BusinessLogic.Identity.Services.Interfaces
 {
-    public interface IIdentityService<TUserDto, TRoleDto, TUser, TRole, TKey, TUserClaim, TUserRole,
+    public interface IIdentityService<TUserDto, TRoleDto, TUser, TRole, TUserClaim, TUserRole,
         TUserLogin, TRoleClaim, TUserToken,
         TUsersDto, TRolesDto, TUserRolesDto, TUserClaimsDto,
         TUserProviderDto, TUserProvidersDto, TUserChangePasswordDto, TRoleClaimsDto, TUserClaimDto, TRoleClaimDto>
-        where TUserDto : UserDto<TKey>
-        where TUser : IdentityUser<TKey>
-        where TRole : IdentityRole<TKey>
-        where TKey : IEquatable<TKey>
-        where TUserClaim : IdentityUserClaim<TKey>
-        where TUserRole : IdentityUserRole<TKey>
-        where TUserLogin : IdentityUserLogin<TKey>
-        where TRoleClaim : IdentityRoleClaim<TKey>
-        where TUserToken : IdentityUserToken<TKey>
-        where TRoleDto : RoleDto<TKey>
-        where TUsersDto : UsersDto<TUserDto, TKey>
-        where TRolesDto : RolesDto<TRoleDto, TKey>
-        where TUserRolesDto : UserRolesDto<TRoleDto, TKey>
-        where TUserClaimsDto : UserClaimsDto<TUserClaimDto, TKey>
-        where TUserProviderDto : UserProviderDto<TKey>
-        where TUserProvidersDto : UserProvidersDto<TUserProviderDto, TKey>
-        where TUserChangePasswordDto : UserChangePasswordDto<TKey>
-        where TRoleClaimsDto : RoleClaimsDto<TRoleClaimDto, TKey>
-        where TUserClaimDto : UserClaimDto<TKey>
-        where TRoleClaimDto : RoleClaimDto<TKey>
+        where TUserDto : UserDto<string>
+        where TUser : IdentityUser<string>
+        where TRole : IdentityRole<string>
+        where TUserClaim : IdentityUserClaim<string>
+        where TUserRole : IdentityUserRole<string>
+        where TUserLogin : IdentityUserLogin<string>
+        where TRoleClaim : IdentityRoleClaim<string>
+        where TUserToken : IdentityUserToken<string>
+        where TRoleDto : RoleDto<string>
+        where TUsersDto : UsersDto<TUserDto, string>
+        where TRolesDto : RolesDto<TRoleDto, string>
+        where TUserRolesDto : UserRolesDto<TRoleDto, string>
+        where TUserClaimsDto : UserClaimsDto<TUserClaimDto, string>
+        where TUserProviderDto : UserProviderDto<string>
+        where TUserProvidersDto : UserProvidersDto<TUserProviderDto, string>
+        where TUserChangePasswordDto : UserChangePasswordDto<string>
+        where TRoleClaimsDto : RoleClaimsDto<TRoleClaimDto, string>
+        where TUserClaimDto : UserClaimDto<string>
+        where TRoleClaimDto : RoleClaimDto<string>
     {
         Task<bool> ExistsUserAsync(string userId);
 
@@ -42,13 +41,13 @@ namespace Skoruba.IdentityServer4.Admin.BusinessLogic.Identity.Services.Interfac
 
         Task<TRolesDto> GetRolesAsync(string search, int page = 1, int pageSize = 10);
 
-        Task<(IdentityResult identityResult, TKey roleId)> CreateRoleAsync(TRoleDto role);
+        Task<(IdentityResult identityResult, string roleId)> CreateRoleAsync(TRoleDto role);
 
         Task<TRoleDto> GetRoleAsync(string roleId);
 
         Task<List<TRoleDto>> GetRolesAsync();
 
-        Task<(IdentityResult identityResult, TKey roleId)> UpdateRoleAsync(TRoleDto role);
+        Task<(IdentityResult identityResult, string roleId)> UpdateRoleAsync(TRoleDto role);
 
         Task<TUserDto> GetUserAsync(string userId);
 
@@ -62,15 +61,15 @@ namespace Skoruba.IdentityServer4.Admin.BusinessLogic.Identity.Services.Interfac
 
         Task<IdentityResult> DeleteTenantAsync(TenantDto tenant);
 
-        Task<(IdentityResult identityResult, TKey userId)> CreateUserAsync(TUserDto user);
+        Task<(IdentityResult identityResult, string userId)> CreateUserAsync(TUserDto user);
 
-        Task<(IdentityResult identityResult, TKey userId)> UpdateUserAsync(TUserDto user);
+        Task<(IdentityResult identityResult, string userId)> UpdateUserAsync(TUserDto user);
 
         Task<IdentityResult> DeleteUserAsync(string userId, TUserDto user);
 
         Task<IdentityResult> CreateUserRoleAsync(TUserRolesDto role);
 
-        Task<TUserRolesDto> BuildUserRolesViewModel(TKey id, int? page);
+        Task<TUserRolesDto> BuildUserRolesViewModel(string id, int? page);
 
         Task<TUserRolesDto> GetUserRolesAsync(string userId, int page = 1,
             int pageSize = 10);
@@ -90,7 +89,7 @@ namespace Skoruba.IdentityServer4.Admin.BusinessLogic.Identity.Services.Interfac
 
         Task<TUserProvidersDto> GetUserProvidersAsync(string userId);
 
-        TKey ConvertToKeyFromString(string id);
+        string ConvertToKeyFromString(string id);
 
         Task<IdentityResult> DeleteUserProvidersAsync(TUserProviderDto provider);
 

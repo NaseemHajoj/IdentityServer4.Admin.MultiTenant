@@ -9,15 +9,14 @@ using Skoruba.IdentityServer4.Admin.EntityFramework.Shared.Entities.Identity;
 
 namespace Skoruba.IdentityServer4.Admin.EntityFramework.Identity.Repositories.Interfaces
 {
-    public interface IIdentityRepository<TUser, TRole, TKey, TUserClaim, TUserRole, TUserLogin, TRoleClaim, TUserToken>
-        where TUser : ApplicationUser<TKey>
-        where TRole : IdentityRole<TKey>
-        where TKey : IEquatable<TKey>
-        where TUserClaim : IdentityUserClaim<TKey>
-        where TUserRole : IdentityUserRole<TKey>
-        where TUserLogin : IdentityUserLogin<TKey>
-        where TRoleClaim : IdentityRoleClaim<TKey>
-        where TUserToken : IdentityUserToken<TKey>
+    public interface IIdentityRepository<TUser, TRole, TUserClaim, TUserRole, TUserLogin, TRoleClaim, TUserToken>
+        where TUser : ApplicationUser<string>
+        where TRole : IdentityRole<string>
+        where TUserClaim : IdentityUserClaim<string>
+        where TUserRole : IdentityUserRole<string>
+        where TUserLogin : IdentityUserLogin<string>
+        where TRoleClaim : IdentityRoleClaim<string>
+        where TUserToken : IdentityUserToken<string>
     {
         Task<bool> ExistsUserAsync(string userId);
 
@@ -31,13 +30,13 @@ namespace Skoruba.IdentityServer4.Admin.EntityFramework.Identity.Repositories.In
 
         Task<PagedList<TRole>> GetRolesAsync(string search, int page = 1, int pageSize = 10);
 
-        Task<(IdentityResult identityResult, TKey roleId)> CreateRoleAsync(TRole role);
+        Task<(IdentityResult identityResult, string roleId)> CreateRoleAsync(TRole role);
 
-        Task<TRole> GetRoleAsync(TKey roleId);
+        Task<TRole> GetRoleAsync(string roleId);
 
         Task<List<TRole>> GetRolesAsync();
 
-        Task<(IdentityResult identityResult, TKey roleId)> UpdateRoleAsync(TRole role);
+        Task<(IdentityResult identityResult, string roleId)> UpdateRoleAsync(TRole role);
 
         Task<TUser> GetUserAsync(string userId);
 
@@ -51,9 +50,9 @@ namespace Skoruba.IdentityServer4.Admin.EntityFramework.Identity.Repositories.In
 
         Task<IdentityResult> DeleteTenantAsync(Guid tenantId);
 
-        Task<(IdentityResult identityResult, TKey userId)> CreateUserAsync(TUser user);
+        Task<(IdentityResult identityResult, string userId)> CreateUserAsync(TUser user);
 
-        Task<(IdentityResult identityResult, TKey userId)> UpdateUserAsync(TUser user);
+        Task<(IdentityResult identityResult, string userId)> UpdateUserAsync(TUser user);
 
         Task<IdentityResult> DeleteUserAsync(string userId);
 

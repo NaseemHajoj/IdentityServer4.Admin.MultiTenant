@@ -8,14 +8,15 @@ using Microsoft.Extensions.Options;
 using Moq;
 using Skoruba.IdentityServer4.Admin.EntityFramework.Shared.Entities.Identity;
 using Skoruba.IdentityServer4.Admin.EntityFramework.Shared.Identity;
+using Skoruba.IdentityServer4.Admin.EntityFramework.Shared.Interfaces;
 
 namespace Skoruba.IdentityServer4.Admin.UnitTests.Mocks
 {
     public static class IdentityMock
     {
-        public static Faker<UserIdentityUserLogin> GetUserProvidersFaker(string key, string loginProvider, string userId)
+        public static Faker<IdentityUserLogin<string>> GetUserProvidersFaker(string key, string loginProvider, string userId)
         {
-            var userProvidersFaker = new Faker<UserIdentityUserLogin>()
+            var userProvidersFaker = new Faker<IdentityUserLogin<string>>()
                 .RuleFor(o => o.LoginProvider, f => loginProvider)
                 .RuleFor(o => o.ProviderKey, f => key)
                 .RuleFor(o => o.ProviderDisplayName, f => Guid.NewGuid().ToString())
@@ -24,7 +25,7 @@ namespace Skoruba.IdentityServer4.Admin.UnitTests.Mocks
             return userProvidersFaker;
         }
 
-        public static UserIdentityUserLogin GenerateRandomUserProviders(string key, string loginProvider, string userId)
+        public static IdentityUserLogin<string> GenerateRandomUserProviders(string key, string loginProvider, string userId)
         {
             var provider = GetUserProvidersFaker(key, loginProvider, userId).Generate();
 
@@ -32,11 +33,11 @@ namespace Skoruba.IdentityServer4.Admin.UnitTests.Mocks
         }
 
         // NOTE: These mocks are from - https://github.com/aspnet/Identity/blob/master/test/Shared/MockHelpers.cs
-        public static ApplicationUserManager<TUser, TKey> TestUserManager<TUser, TKey>(ApplicationUserStore<TUser, TKey> store = null) 
-            where TUser : ApplicationUser<TKey>, new()
-            where TKey : IEquatable<TKey>
+        public static ApplicationUserManager<TUser> TestUserManager<TUser>(ApplicationUserStore<TUser> store = null) 
+            where TUser : ApplicationUser<string>, new()
         {
-            store = store ?? new Mock<ApplicationUserStore<TUser, TKey>>().Object;
+            // TODO: figure this out too, store 
+            IMultitenantUserStore<TUser> theStore = new Mock<IMultitenantUserStore<TUser>>().Object;
             var options = new Mock<IOptions<IdentityOptions>>();
             var idOptions = new IdentityOptions { Lockout = { AllowedForNewUsers = false } };
             options.Setup(o => o.Value).Returns(idOptions);
@@ -44,10 +45,10 @@ namespace Skoruba.IdentityServer4.Admin.UnitTests.Mocks
             var validator = new Mock<IUserValidator<TUser>>();
             userValidators.Add(validator.Object);
             var pwdValidators = new List<PasswordValidator<TUser>> { new PasswordValidator<TUser>() };
-            var userManager = new ApplicationUserManager<TUser, TKey>(store, options.Object, new PasswordHasher<TUser>(),
+            var userManager = new ApplicationUserManager<TUser>(theStore, options.Object, new PasswordHasher<TUser>(),
                 userValidators, pwdValidators, new UpperInvariantLookupNormalizer(),
                 new IdentityErrorDescriber(), null,
-                new Mock<ILogger<UserManager<TUser>>>().Object);
+                new Mock<ILogger<ApplicationUserManager<TUser>>>().Object);
             validator.Setup(v => v.ValidateAsync(userManager, It.IsAny<TUser>()))
                 .Returns(Task.FromResult(IdentityResult.Success)).Verifiable();
             return userManager;

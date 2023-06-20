@@ -30,6 +30,7 @@ using Skoruba.IdentityServer4.Admin.EntityFramework.Shared.Entities.Identity;
 using Skoruba.IdentityServer4.Admin.UnitTests.Mocks;
 using Skoruba.IdentityServer4.Admin.UI.Helpers;
 using Xunit;
+using Microsoft.AspNetCore.Identity;
 
 namespace Skoruba.IdentityServer4.Admin.UnitTests.Controllers
 {
@@ -813,8 +814,8 @@ namespace Skoruba.IdentityServer4.Admin.UnitTests.Controllers
             services.AddAdminServices<IdentityServerConfigurationDbContext, IdentityServerPersistedGrantDbContext, AdminLogDbContext>();
 
             services.AddAdminAspNetIdentityServices<AdminIdentityDbContext, IdentityServerPersistedGrantDbContext, UserDto<string>, RoleDto<string>,
-                ApplicationUser<string>, UserIdentityRole, string, UserIdentityUserClaim, UserIdentityUserRole,
-                UserIdentityUserLogin, UserIdentityRoleClaim, UserIdentityUserToken,
+                ApplicationUser<string>, IdentityRole, IdentityUserClaim<string>, IdentityUserRole<string>,
+                IdentityUserLogin<string>, IdentityRoleClaim<string>, IdentityUserToken<string>,
                 UsersDto<UserDto<string>, string>, RolesDto<RoleDto<string>, string>, UserRolesDto<RoleDto<string>, string>,
                 UserClaimsDto<UserClaimDto<string>, string>, UserProviderDto<string>, UserProvidersDto<UserProviderDto<string>, string>, UserChangePasswordDto<string>,
                 RoleClaimsDto<RoleClaimDto<string>, string>, UserClaimDto<string>, RoleClaimDto<string>>();

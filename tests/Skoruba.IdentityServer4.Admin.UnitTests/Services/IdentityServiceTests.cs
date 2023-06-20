@@ -42,32 +42,32 @@ namespace Skoruba.IdentityServer4.Admin.UnitTests.Services
         private readonly ConfigurationStoreOptions _storeOptions;
         private readonly OperationalStoreOptions _operationalStore;
 
-        private IIdentityRepository<ApplicationUser<string>, UserIdentityRole, string,
-            UserIdentityUserClaim, UserIdentityUserRole, UserIdentityUserLogin, UserIdentityRoleClaim,
-            UserIdentityUserToken> GetIdentityRepository(AdminIdentityDbContext dbContext,
-            ApplicationUserManager<ApplicationUser<string>, string> userManager,
-            RoleManager<UserIdentityRole> roleManager,
+        private IIdentityRepository<ApplicationUser<string>, IdentityRole, 
+            IdentityUserClaim<string>, IdentityUserRole<string>, IdentityUserLogin<string>, IdentityRoleClaim<string>,
+            IdentityUserToken<string>> GetIdentityRepository(AdminIdentityDbContext dbContext,
+            ApplicationUserManager<ApplicationUser<string>> userManager,
+            RoleManager<IdentityRole> roleManager,
             IMapper mapper)
         {
-            return new IdentityRepository<AdminIdentityDbContext, ApplicationUser<string>, UserIdentityRole, string,
-                UserIdentityUserClaim, UserIdentityUserRole, UserIdentityUserLogin, UserIdentityRoleClaim,
-                UserIdentityUserToken>(dbContext, userManager, roleManager, mapper);
+            return new IdentityRepository<AdminIdentityDbContext, ApplicationUser<string>, IdentityRole,
+                IdentityUserClaim<string>, IdentityUserRole<string>, IdentityUserLogin<string>, IdentityRoleClaim<string>,
+                IdentityUserToken<string>>(dbContext, userManager, roleManager, mapper);
         }
 
         private IIdentityService<UserDto<string>, RoleDto<string>, ApplicationUser<string>,
-            UserIdentityRole, string,
-            UserIdentityUserClaim, UserIdentityUserRole, UserIdentityUserLogin, UserIdentityRoleClaim,
-            UserIdentityUserToken,
+            IdentityRole, 
+            IdentityUserClaim<string>, IdentityUserRole<string>, IdentityUserLogin<string>, IdentityRoleClaim<string>,
+            IdentityUserToken<string>,
             UsersDto<UserDto<string>, string>, RolesDto<RoleDto<string>, string>, UserRolesDto<RoleDto<string>, string>,
             UserClaimsDto<UserClaimDto<string>, string>, UserProviderDto<string>, UserProvidersDto<UserProviderDto<string>, string>, UserChangePasswordDto<string>,
-            RoleClaimsDto<RoleClaimDto<string>, string>, UserClaimDto<string>, RoleClaimDto<string>> GetIdentityService(IIdentityRepository<ApplicationUser<string>, UserIdentityRole, string, UserIdentityUserClaim, UserIdentityUserRole, UserIdentityUserLogin, UserIdentityRoleClaim, UserIdentityUserToken> identityRepository,
+            RoleClaimsDto<RoleClaimDto<string>, string>, UserClaimDto<string>, RoleClaimDto<string>> GetIdentityService(IIdentityRepository<ApplicationUser<string>, IdentityRole, IdentityUserClaim<string>, IdentityUserRole<string>, IdentityUserLogin<string>, IdentityRoleClaim<string>, IdentityUserToken<string>> identityRepository,
             IIdentityServiceResources identityServiceResources,
             IMapper mapper, IAuditEventLogger auditEventLogger)
         {
             return new IdentityService<UserDto<string>, RoleDto<string>, ApplicationUser<string>,
-                UserIdentityRole, string,
-                UserIdentityUserClaim, UserIdentityUserRole, UserIdentityUserLogin, UserIdentityRoleClaim,
-                UserIdentityUserToken,
+                IdentityRole, 
+                IdentityUserClaim<string>, IdentityUserRole<string>, IdentityUserLogin<string>, IdentityRoleClaim<string>,
+                IdentityUserToken<string>,
                 UsersDto<UserDto<string>, string>, RolesDto<RoleDto<string>, string>, UserRolesDto<RoleDto<string>, string>,
                 UserClaimsDto<UserClaimDto<string>, string>, UserProviderDto<string>, UserProvidersDto<UserProviderDto<string>, string>, UserChangePasswordDto<string>,
                 RoleClaimsDto<RoleClaimDto<string>, string>, UserClaimDto<string>, RoleClaimDto<string>>(identityRepository, identityServiceResources, mapper, auditEventLogger);
@@ -75,33 +75,32 @@ namespace Skoruba.IdentityServer4.Admin.UnitTests.Services
 
         private IMapper GetMapper()
         {
-            return new MapperConfiguration(cfg => cfg.AddProfile<IdentityMapperProfile<UserDto<string>, RoleDto<string>, ApplicationUser<string>, UserIdentityRole, string,
-                        UserIdentityUserClaim, UserIdentityUserRole, UserIdentityUserLogin, UserIdentityRoleClaim,
-                        UserIdentityUserToken,
+            return new MapperConfiguration(cfg => cfg.AddProfile<IdentityMapperProfile<UserDto<string>, RoleDto<string>, ApplicationUser<string>, IdentityRole, 
+                        IdentityUserClaim<string>, IdentityUserRole<string>, IdentityUserLogin<string>, IdentityRoleClaim<string>,
+                        IdentityUserToken<string>,
                         UsersDto<UserDto<string>, string>, RolesDto<RoleDto<string>, string>, UserRolesDto<RoleDto<string>, string>,
                         UserClaimsDto<UserClaimDto<string>, string>, UserProviderDto<string>, UserProvidersDto<UserProviderDto<string>, string>,
                         RoleClaimsDto<RoleClaimDto<string>, string>, UserClaimDto<string>, RoleClaimDto<string>>>())
                 .CreateMapper();
         }
 
-        private ApplicationUserManager<ApplicationUser<string>, string> GetTestUserManager(AdminIdentityDbContext context)
+        private ApplicationUserManager<ApplicationUser<string>> GetTestUserManager(AdminIdentityDbContext context)
         {
-            var testUserManager = IdentityMock.TestUserManager(new ApplicationUserStore<ApplicationUser<string>, string>(context, new IdentityErrorDescriber()));
-
+            var testUserManager = IdentityMock.TestUserManager<ApplicationUser<string>>(new ApplicationUserStore<ApplicationUser<string>>(context, new IdentityErrorDescriber()));
             return testUserManager;
         }
 
-        private RoleManager<UserIdentityRole> GetTestRoleManager(AdminIdentityDbContext context)
+        private RoleManager<IdentityRole> GetTestRoleManager(AdminIdentityDbContext context)
         {
-            var testRoleManager = IdentityMock.TestRoleManager(new RoleStore<UserIdentityRole, AdminIdentityDbContext, string, UserIdentityUserRole, UserIdentityRoleClaim>(context, new IdentityErrorDescriber()));
+            var testRoleManager = IdentityMock.TestRoleManager(new RoleStore<IdentityRole, AdminIdentityDbContext, string, IdentityUserRole<string>, IdentityRoleClaim<string>>(context, new IdentityErrorDescriber()));
 
             return testRoleManager;
         }
 
         private IIdentityService<UserDto<string>, RoleDto<string>, ApplicationUser<string>,
-            UserIdentityRole, string,
-            UserIdentityUserClaim, UserIdentityUserRole, UserIdentityUserLogin, UserIdentityRoleClaim,
-            UserIdentityUserToken,
+            IdentityRole, 
+            IdentityUserClaim<string>, IdentityUserRole<string>, IdentityUserLogin<string>, IdentityRoleClaim<string>,
+            IdentityUserToken<string>,
             UsersDto<UserDto<string>, string>, RolesDto<RoleDto<string>, string>,
             UserRolesDto<RoleDto<string>, string>,
             UserClaimsDto<UserClaimDto<string>, string>, UserProviderDto<string>, UserProvidersDto<UserProviderDto<string>, string>, UserChangePasswordDto<string>,

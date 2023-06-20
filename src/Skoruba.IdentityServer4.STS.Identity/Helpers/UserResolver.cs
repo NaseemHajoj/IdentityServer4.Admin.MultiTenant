@@ -7,14 +7,13 @@ using Skoruba.IdentityServer4.Shared.Configuration.Configuration.Identity;
 
 namespace Skoruba.IdentityServer4.STS.Identity.Helpers
 {
-    public class UserResolver<TUser, TKey> 
-        where TUser : ApplicationUser<TKey>, new()
-        where TKey : IEquatable<TKey>
+    public class UserResolver<TUser> 
+        where TUser : ApplicationUser<string>, new()
     {
-        private readonly ApplicationUserManager<TUser, TKey> _userManager;
+        private readonly ApplicationUserManager<TUser> _userManager;
         private readonly LoginResolutionPolicy _policy;
 
-        public UserResolver(ApplicationUserManager<TUser, TKey> userManager, LoginConfiguration configuration)
+        public UserResolver(ApplicationUserManager<TUser> userManager, LoginConfiguration configuration)
         {
             _userManager = userManager;
             _policy = configuration.ResolutionPolicy;

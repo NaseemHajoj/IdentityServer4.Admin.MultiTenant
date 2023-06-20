@@ -43,7 +43,7 @@ namespace Skoruba.IdentityServer4.Admin.EntityFramework.Helpers
             where TAuditLogDbContext : DbContext, IAuditLoggingDbContext<AuditLog>
             where TDataProtectionDbContext : DbContext, IDataProtectionKeyContext
             where TUser : ApplicationUser<string>, new()
-            where TRole : IdentityRole<string>, new()
+            where TRole : IdentityRole, new()
         {
             bool migrationComplete = false;
             using (var serviceScope = host.Services.CreateScope())
@@ -122,13 +122,13 @@ namespace Skoruba.IdentityServer4.Admin.EntityFramework.Helpers
         where TIdentityDbContext : DbContext, IAdminIdentityDbContext
         where TIdentityServerDbContext : DbContext, IAdminConfigurationDbContext
         where TUser : ApplicationUser<string>, new()
-        where TRole : IdentityRole<string>, new()
+        where TRole : IdentityRole, new()
         {
             using (var scope = serviceProvider.GetRequiredService<IServiceScopeFactory>().CreateScope())
             {
                 var identityContext = scope.ServiceProvider.GetRequiredService<TIdentityDbContext>();
                 var identityServerContext = scope.ServiceProvider.GetRequiredService<TIdentityServerDbContext>();
-                var userManager = scope.ServiceProvider.GetRequiredService<ApplicationUserManager<TUser, string>>();
+                var userManager = scope.ServiceProvider.GetRequiredService<ApplicationUserManager<TUser>>();
                 var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<TRole>>();
                 var idsDataConfiguration = scope.ServiceProvider.GetRequiredService<IdentityServerData>();
                 var idDataConfiguration = scope.ServiceProvider.GetRequiredService<IdentityData>();
@@ -144,11 +144,11 @@ namespace Skoruba.IdentityServer4.Admin.EntityFramework.Helpers
         /// </summary>
         private static async Task EnsureSeedIdentityData<TIdentityDbContext, TUser, TRole>(
             TIdentityDbContext context,
-            ApplicationUserManager<TUser, string> userManager,
+            ApplicationUserManager<TUser> userManager,
             RoleManager<TRole> roleManager, IdentityData identityDataConfiguration)
             where TIdentityDbContext : DbContext, IAdminIdentityDbContext
             where TUser : ApplicationUser<string>, new()
-            where TRole : IdentityRole<string>, new()
+            where TRole : IdentityRole, new()
         {
             // verify system tenant exists, or create
             string tenantName = identityDataConfiguration.SystemTenant.Name;

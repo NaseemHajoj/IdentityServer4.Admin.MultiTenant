@@ -42,7 +42,7 @@ namespace Microsoft.Extensions.DependencyInjection
             where TAuditLog : AuditLog, new()
             => AddIdentityServer4AdminUI<TIdentityDbContext, TIdentityServerDbContext, TPersistedGrantDbContext, TLogDbContext, TAuditLogDbContext, TAuditLog, TDataProtectionDbContext, TUser, IdentityRole, IdentityUserClaim<string>,
                 IdentityUserRole<string>, IdentityUserLogin<string>, IdentityRoleClaim<string>,
-                IdentityUserToken<string>, string, UserDto<string>, RoleDto<string>, UsersDto<UserDto<string>, string>, RolesDto<RoleDto<string>, string>,
+                IdentityUserToken<string>, UserDto<string>, RoleDto<string>, UsersDto<UserDto<string>, string>, RolesDto<RoleDto<string>, string>,
                 UserRolesDto<RoleDto<string>, string>, UserClaimsDto<UserClaimDto<string>, string>, UserProviderDto<string>, UserProvidersDto<UserProviderDto<string>, string>,
                 UserChangePasswordDto<string>, RoleClaimsDto<RoleClaimDto<string>, string>, UserClaimDto<string>, RoleClaimDto<string>>(services, optionsAction);
 
@@ -53,36 +53,35 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <param name="optionsAction"></param>
         /// <returns></returns>
         public static IServiceCollection AddIdentityServer4AdminUI<TIdentityDbContext, TIdentityServerDbContext, TPersistedGrantDbContext, TLogDbContext, TAuditLogDbContext, TAuditLog, TDataProtectionDbContext, TUser, TRole, TUserClaim,
-            TUserRole, TUserLogin, TRoleClaim, TUserToken, TKey, TUserDto, TRoleDto, TUsersDto, TRolesDto, TUserRolesDto,
+            TUserRole, TUserLogin, TRoleClaim, TUserToken, TUserDto, TRoleDto, TUsersDto, TRolesDto, TUserRolesDto,
             TUserClaimsDto, TUserProviderDto, TUserProvidersDto, TUserChangePasswordDto, TRoleClaimsDto, TUserClaimDto,
             TRoleClaimDto>
             (this IServiceCollection services, Action<IdentityServer4AdminUIOptions> optionsAction)
-            where TIdentityDbContext : IdentityDbContext<TUser, TRole, TKey, TUserClaim, TUserRole, TUserLogin, TRoleClaim, TUserToken>, IAdminIdentityDbContext
+            where TIdentityDbContext : IdentityDbContext<TUser, TRole, string, TUserClaim, TUserRole, TUserLogin, TRoleClaim, TUserToken>, IAdminIdentityDbContext
             where TIdentityServerDbContext : DbContext, IAdminConfigurationDbContext
             where TPersistedGrantDbContext : DbContext, IAdminPersistedGrantDbContext
             where TLogDbContext : DbContext, IAdminLogDbContext
             where TAuditLogDbContext : DbContext, IAuditLoggingDbContext<TAuditLog>
             where TDataProtectionDbContext : DbContext, IDataProtectionKeyContext
-            where TUser : ApplicationUser<TKey>, new()
-            where TRole : IdentityRole<TKey>
-            where TUserClaim : IdentityUserClaim<TKey>
-            where TUserRole : IdentityUserRole<TKey>
-            where TUserLogin : IdentityUserLogin<TKey>
-            where TRoleClaim : IdentityRoleClaim<TKey>
-            where TUserToken : IdentityUserToken<TKey>
-            where TKey : IEquatable<TKey>
-            where TUserDto : UserDto<TKey>, new()
-            where TRoleDto : RoleDto<TKey>, new()
-            where TUsersDto : UsersDto<TUserDto, TKey>
-            where TRolesDto : RolesDto<TRoleDto, TKey>
-            where TUserRolesDto : UserRolesDto<TRoleDto, TKey>
-            where TUserClaimsDto : UserClaimsDto<TUserClaimDto, TKey>
-            where TUserProviderDto : UserProviderDto<TKey>
-            where TUserProvidersDto : UserProvidersDto<TUserProviderDto, TKey>
-            where TUserChangePasswordDto : UserChangePasswordDto<TKey>
-            where TRoleClaimsDto : RoleClaimsDto<TRoleClaimDto, TKey>
-            where TUserClaimDto : UserClaimDto<TKey>
-            where TRoleClaimDto : RoleClaimDto<TKey>
+            where TUser : ApplicationUser<string>, new()
+            where TRole : IdentityRole<string>
+            where TUserClaim : IdentityUserClaim<string>
+            where TUserRole : IdentityUserRole<string>
+            where TUserLogin : IdentityUserLogin<string>
+            where TRoleClaim : IdentityRoleClaim<string>
+            where TUserToken : IdentityUserToken<string>
+            where TUserDto : UserDto<string>, new()
+            where TRoleDto : RoleDto<string>, new()
+            where TUsersDto : UsersDto<TUserDto, string>
+            where TRolesDto : RolesDto<TRoleDto, string>
+            where TUserRolesDto : UserRolesDto<TRoleDto, string>
+            where TUserClaimsDto : UserClaimsDto<TUserClaimDto, string>
+            where TUserProviderDto : UserProviderDto<string>
+            where TUserProvidersDto : UserProvidersDto<TUserProviderDto, string>
+            where TUserChangePasswordDto : UserChangePasswordDto<string>
+            where TRoleClaimsDto : RoleClaimsDto<TRoleClaimDto, string>
+            where TUserClaimDto : UserClaimDto<string>
+            where TRoleClaimDto : RoleClaimDto<string>
             where TAuditLog : AuditLog, new()
         {
             // Builds the options from user preferences or configuration.
@@ -114,12 +113,12 @@ namespace Microsoft.Extensions.DependencyInjection
             // Add Asp.Net Core Identity Configuration and OpenIdConnect auth as well
             if (!options.Testing.IsStaging)
             {
-                services.AddAuthenticationServices<TIdentityDbContext, TUser, TRole, TKey>
+                services.AddAuthenticationServices<TIdentityDbContext, TUser, TRole>
                         (options.Admin, options.IdentityConfigureAction, options.Security.AuthenticationBuilderAction);
             }
             else
             {
-                services.AddAuthenticationServicesStaging<TIdentityDbContext, TUser, TRole, TKey>();
+                services.AddAuthenticationServicesStaging<TIdentityDbContext, TUser, TRole>();
             }
 
             // Add HSTS options
@@ -144,7 +143,7 @@ namespace Microsoft.Extensions.DependencyInjection
             // Add all dependencies for Asp.Net Core Identity
             // If you want to change primary keys or use another db model for Asp.Net Core Identity:
             services.AddAdminAspNetIdentityServices<TIdentityDbContext, TPersistedGrantDbContext,
-                TUserDto, TRoleDto, TUser, TRole, TKey, TUserClaim,
+                TUserDto, TRoleDto, TUser, TRole, TUserClaim,
                 TUserRole, TUserLogin, TRoleClaim, TUserToken, TUsersDto, TRolesDto, TUserRolesDto,
                 TUserClaimsDto, TUserProviderDto, TUserProvidersDto, TUserChangePasswordDto,
                 TRoleClaimsDto, TUserClaimDto, TRoleClaimDto>();
@@ -152,7 +151,7 @@ namespace Microsoft.Extensions.DependencyInjection
             // Add all dependencies for Asp.Net Core Identity in MVC - these dependencies are injected into generic Controllers
             // Including settings for MVC and Localization
             services.AddMvcWithLocalization<TUserDto, TRoleDto,
-                TUser, TRole, TKey, TUserClaim, TUserRole,
+                TUser, TRole, TUserClaim, TUserRole,
                 TUserLogin, TRoleClaim, TUserToken,
                 TUsersDto, TRolesDto, TUserRolesDto,
                 TUserClaimsDto, TUserProviderDto, TUserProvidersDto, TUserChangePasswordDto,

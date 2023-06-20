@@ -2,6 +2,8 @@
 using System.Threading.Tasks;
 using FluentAssertions;
 using IdentityServer4.EntityFramework.Options;
+
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Moq;
 using Skoruba.AuditLogging.Services;
@@ -43,7 +45,7 @@ namespace Skoruba.IdentityServer4.Admin.UnitTests.Services
 
         private IPersistedGrantAspNetIdentityRepository GetPersistedGrantRepository(AdminIdentityDbContext identityDbContext, IdentityServerPersistedGrantDbContext context)
         {
-            var persistedGrantRepository = new PersistedGrantAspNetIdentityRepository<AdminIdentityDbContext, IdentityServerPersistedGrantDbContext, ApplicationUser<string>, UserIdentityRole, string, UserIdentityUserClaim, UserIdentityUserRole, UserIdentityUserLogin, UserIdentityRoleClaim, UserIdentityUserToken>(identityDbContext, context);
+            var persistedGrantRepository = new PersistedGrantAspNetIdentityRepository<AdminIdentityDbContext, IdentityServerPersistedGrantDbContext, ApplicationUser<string>, IdentityRole, IdentityUserClaim<string>, IdentityUserRole<string>, IdentityUserLogin<string>, IdentityRoleClaim<string>, IdentityUserToken<string>>(identityDbContext, context);
 
             return persistedGrantRepository;
         }

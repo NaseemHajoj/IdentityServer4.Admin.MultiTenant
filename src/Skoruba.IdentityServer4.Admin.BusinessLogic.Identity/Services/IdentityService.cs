@@ -18,40 +18,40 @@ using Skoruba.IdentityServer4.Admin.EntityFramework.Shared.Entities.Identity;
 
 namespace Skoruba.IdentityServer4.Admin.BusinessLogic.Identity.Services
 {
-    public class IdentityService<TUserDto, TRoleDto, TUser, TRole, TKey, TUserClaim, TUserRole,
+    public class IdentityService<TUserDto, TRoleDto, TUser, TRole, TUserClaim, TUserRole,
         TUserLogin, TRoleClaim, TUserToken,
         TUsersDto, TRolesDto, TUserRolesDto, TUserClaimsDto,
-        TUserProviderDto, TUserProvidersDto, TUserChangePasswordDto, TRoleClaimsDto, TUserClaimDto, TRoleClaimDto> : IIdentityService<TUserDto, TRoleDto, TUser, TRole, TKey, TUserClaim, TUserRole,
+        TUserProviderDto, TUserProvidersDto, TUserChangePasswordDto, TRoleClaimsDto, TUserClaimDto, TRoleClaimDto> : IIdentityService<TUserDto, TRoleDto, TUser, TRole, TUserClaim, TUserRole,
         TUserLogin, TRoleClaim, TUserToken,
         TUsersDto, TRolesDto, TUserRolesDto, TUserClaimsDto,
         TUserProviderDto, TUserProvidersDto, TUserChangePasswordDto, TRoleClaimsDto, TUserClaimDto, TRoleClaimDto>
-        where TUserDto : UserDto<TKey>
-        where TRoleDto : RoleDto<TKey>
-        where TUser : ApplicationUser<TKey>
-        where TRole : IdentityRole<TKey>
-        where TKey : IEquatable<TKey>
-        where TUserClaim : IdentityUserClaim<TKey>
-        where TUserRole : IdentityUserRole<TKey>
-        where TUserLogin : IdentityUserLogin<TKey>
-        where TRoleClaim : IdentityRoleClaim<TKey>
-        where TUserToken : IdentityUserToken<TKey>
-        where TUsersDto : UsersDto<TUserDto, TKey>
-        where TRolesDto : RolesDto<TRoleDto, TKey>
-        where TUserRolesDto : UserRolesDto<TRoleDto, TKey>
-        where TUserClaimsDto : UserClaimsDto<TUserClaimDto, TKey>
-        where TUserProviderDto : UserProviderDto<TKey>
-        where TUserProvidersDto : UserProvidersDto<TUserProviderDto, TKey>
-        where TUserChangePasswordDto : UserChangePasswordDto<TKey>
-        where TRoleClaimsDto : RoleClaimsDto<TRoleClaimDto, TKey>
-        where TUserClaimDto : UserClaimDto<TKey>
-        where TRoleClaimDto : RoleClaimDto<TKey>
+        where TUserDto : UserDto<string>
+        where TRoleDto : RoleDto<string>
+        where TUser : ApplicationUser<string>
+        where TRole : IdentityRole<string>
+        where TUserClaim : IdentityUserClaim<string>
+        where TUserRole : IdentityUserRole<string>
+        where TUserLogin : IdentityUserLogin<string>
+        where TRoleClaim : IdentityRoleClaim<string>
+        where TUserToken : IdentityUserToken<string>
+        where TUsersDto : UsersDto<TUserDto, string>
+        where TRolesDto : RolesDto<TRoleDto, string>
+        where TUserRolesDto : UserRolesDto<TRoleDto, string>
+        where TUserClaimsDto : UserClaimsDto<TUserClaimDto, string>
+        where TUserProviderDto : UserProviderDto<string>
+        where TUserProvidersDto : UserProvidersDto<TUserProviderDto, string>
+        where TUserChangePasswordDto : UserChangePasswordDto<string>
+        where TRoleClaimsDto : RoleClaimsDto<TRoleClaimDto, string>
+        where TUserClaimDto : UserClaimDto<string>
+        where TRoleClaimDto : RoleClaimDto<string>
     {
-        protected readonly IIdentityRepository<TUser, TRole, TKey, TUserClaim, TUserRole, TUserLogin, TRoleClaim, TUserToken> IdentityRepository;
+        protected readonly IIdentityRepository<TUser, TRole, TUserClaim, TUserRole, TUserLogin, TRoleClaim, TUserToken> IdentityRepository;
         protected readonly IIdentityServiceResources IdentityServiceResources;
         protected readonly IMapper Mapper;
         protected readonly IAuditEventLogger AuditEventLogger;
 
-        public IdentityService(IIdentityRepository<TUser, TRole, TKey, TUserClaim, TUserRole, TUserLogin, TRoleClaim, TUserToken> identityRepository,
+        public IdentityService(
+            IIdentityRepository<TUser, TRole, TUserClaim, TUserRole, TUserLogin, TRoleClaim, TUserToken> identityRepository,
             IIdentityServiceResources identityServiceResources,
             IMapper mapper,
             IAuditEventLogger auditEventLogger)
@@ -122,7 +122,7 @@ namespace Skoruba.IdentityServer4.Admin.BusinessLogic.Identity.Services
             return rolesDto;
         }
 
-        public virtual async Task<(IdentityResult identityResult, TKey roleId)> CreateRoleAsync(TRoleDto role)
+        public virtual async Task<(IdentityResult identityResult, string roleId)> CreateRoleAsync(TRoleDto role)
         {
             var roleEntity = Mapper.Map<TRole>(role);
             var (identityResult, roleId) = await IdentityRepository.CreateRoleAsync(roleEntity);
@@ -165,7 +165,7 @@ namespace Skoruba.IdentityServer4.Admin.BusinessLogic.Identity.Services
             return roleDtos;
         }
 
-        public virtual async Task<(IdentityResult identityResult, TKey roleId)> UpdateRoleAsync(TRoleDto role)
+        public virtual async Task<(IdentityResult identityResult, string roleId)> UpdateRoleAsync(TRoleDto role)
         {
             var userIdentityRole = Mapper.Map<TRole>(role);
 
@@ -192,7 +192,7 @@ namespace Skoruba.IdentityServer4.Admin.BusinessLogic.Identity.Services
             return userDto;
         }
 
-        public virtual async Task<(IdentityResult identityResult, TKey userId)> CreateUserAsync(TUserDto user)
+        public virtual async Task<(IdentityResult identityResult, string userId)> CreateUserAsync(TUserDto user)
         {
             var userIdentity = Mapper.Map<TUser>(user);
             var (identityResult, userId) = await IdentityRepository.CreateUserAsync(userIdentity);
@@ -209,7 +209,7 @@ namespace Skoruba.IdentityServer4.Admin.BusinessLogic.Identity.Services
         /// </summary>
         /// <param name="user"></param>
         /// <returns></returns>
-        public virtual async Task<(IdentityResult identityResult, TKey userId)> UpdateUserAsync(TUserDto user)
+        public virtual async Task<(IdentityResult identityResult, string userId)> UpdateUserAsync(TUserDto user)
         {
             var userIdentity = Mapper.Map<TUser>(user);
             await MapOriginalPasswordHashAsync(userIdentity);
@@ -257,7 +257,7 @@ namespace Skoruba.IdentityServer4.Admin.BusinessLogic.Identity.Services
             return HandleIdentityError(identityResult, IdentityServiceResources.UserRoleCreateFailed().Description, IdentityServiceResources.IdentityErrorKey().Description, userRolesDto);
         }
 
-        public virtual async Task<TUserRolesDto> BuildUserRolesViewModel(TKey id, int? page)
+        public virtual async Task<TUserRolesDto> BuildUserRolesViewModel(string id, int? page)
         {
             var roles = await GetRolesAsync();
             var userRoles = await GetUserRolesAsync(id.ToString(), page ?? 1);
@@ -325,8 +325,8 @@ namespace Skoruba.IdentityServer4.Admin.BusinessLogic.Identity.Services
 
         public virtual async Task<IdentityResult> CreateUserClaimsAsync(TUserClaimsDto claimsDto)
         {
-            var userIdentityUserClaim = Mapper.Map<TUserClaim>(claimsDto);
-            var identityResult = await IdentityRepository.CreateUserClaimsAsync(userIdentityUserClaim);
+            var identityUserClaim = Mapper.Map<TUserClaim>(claimsDto);
+            var identityResult = await IdentityRepository.CreateUserClaimsAsync(identityUserClaim);
 
             await AuditEventLogger.LogEventAsync(new UserClaimsSavedEvent<TUserClaimsDto>(claimsDto));
 
@@ -335,8 +335,8 @@ namespace Skoruba.IdentityServer4.Admin.BusinessLogic.Identity.Services
 
         public virtual async Task<IdentityResult> UpdateUserClaimsAsync(TUserClaimsDto claimsDto)
         {
-            var userIdentityUserClaim = Mapper.Map<TUserClaim>(claimsDto);
-            var identityResult = await IdentityRepository.UpdateUserClaimsAsync(userIdentityUserClaim);
+            var identityUserClaim = Mapper.Map<TUserClaim>(claimsDto);
+            var identityResult = await IdentityRepository.UpdateUserClaimsAsync(identityUserClaim);
 
             await AuditEventLogger.LogEventAsync(new UserClaimsSavedEvent<TUserClaimsDto>(claimsDto));
 
@@ -352,13 +352,13 @@ namespace Skoruba.IdentityServer4.Admin.BusinessLogic.Identity.Services
             return deleted;
         }
 
-        public virtual TKey ConvertToKeyFromString(string id)
+        public virtual string ConvertToKeyFromString(string id)
         {
             if (id == null)
             {
-                return default(TKey);
+                return default(string);
             }
-            return (TKey)TypeDescriptor.GetConverter(typeof(TKey)).ConvertFromInvariantString(id);
+            return (string)TypeDescriptor.GetConverter(typeof(string)).ConvertFromInvariantString(id);
         }
 
         public virtual async Task<TUserProvidersDto> GetUserProvidersAsync(string userId)

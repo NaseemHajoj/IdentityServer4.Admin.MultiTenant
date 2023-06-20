@@ -37,38 +37,37 @@ namespace Skoruba.IdentityServer4.STS.Identity.Controllers
 {
     [SecurityHeaders]
     [Authorize]
-    public class AccountController<TUser, TKey> : Controller
-        where TUser : ApplicationUser<TKey>, new()
-        where TKey : IEquatable<TKey>
+    public class AccountController<TUser> : Controller
+        where TUser : ApplicationUser<string>, new()
     {
-        private readonly UserResolver<TUser, TKey> _userResolver;
-        private readonly ApplicationUserManager<TUser, TKey> _userManager;
-        private readonly ApplicationSignInManager<TUser, TKey> _signInManager;
+        private readonly UserResolver<TUser> _userResolver;
+        private readonly ApplicationUserManager<TUser> _userManager;
+        private readonly ApplicationSignInManager<TUser> _signInManager;
         private readonly IIdentityServerInteractionService _interaction;
         private readonly IClientStore _clientStore;
         private readonly IAuthenticationSchemeProvider _schemeProvider;
         private readonly IEventService _events;
         private readonly IEmailSender _emailSender;
-        private readonly IGenericControllerLocalizer<AccountController<TUser, TKey>> _localizer;
+        private readonly IGenericControllerLocalizer<AccountController<TUser>> _localizer;
         private readonly LoginConfiguration _loginConfiguration;
         private readonly RegisterConfiguration _registerConfiguration;
         private readonly IdentityOptions _identityOptions;
-        private readonly ILogger<AccountController<TUser, TKey>> _logger;
+        private readonly ILogger<AccountController<TUser>> _logger;
 
         public AccountController(
-            UserResolver<TUser, TKey> userResolver,
-            ApplicationUserManager<TUser, TKey> userManager,
-            ApplicationSignInManager<TUser, TKey> signInManager,
+            UserResolver<TUser> userResolver,
+            ApplicationUserManager<TUser> userManager,
+            ApplicationSignInManager<TUser> signInManager,
             IIdentityServerInteractionService interaction,
             IClientStore clientStore,
             IAuthenticationSchemeProvider schemeProvider,
             IEventService events,
             IEmailSender emailSender,
-            IGenericControllerLocalizer<AccountController<TUser, TKey>> localizer,
+            IGenericControllerLocalizer<AccountController<TUser>> localizer,
             LoginConfiguration loginConfiguration,
             RegisterConfiguration registerConfiguration,
             IdentityOptions identityOptions,
-            ILogger<AccountController<TUser, TKey>> logger)
+            ILogger<AccountController<TUser>> logger)
         {
             _userResolver = userResolver;
             _userManager = userManager;

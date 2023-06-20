@@ -22,27 +22,26 @@ using Skoruba.IdentityServer4.Admin.EntityFramework.Shared.Interfaces;
 
 namespace Skoruba.IdentityServer4.Admin.EntityFramework.Identity.Repositories
 {
-    public class IdentityRepository<TIdentityDbContext, TUser, TRole, TKey, TUserClaim, TUserRole, TUserLogin, TRoleClaim, TUserToken>
-        : IIdentityRepository<TUser, TRole, TKey, TUserClaim, TUserRole, TUserLogin, TRoleClaim, TUserToken>
-        where TIdentityDbContext : IdentityDbContext<TUser, TRole, TKey, TUserClaim, TUserRole, TUserLogin, TRoleClaim, TUserToken>, IAdminIdentityDbContext
-        where TUser : ApplicationUser<TKey>, new()
-        where TRole : IdentityRole<TKey>
-        where TKey : IEquatable<TKey>
-        where TUserClaim : IdentityUserClaim<TKey>
-        where TUserRole : IdentityUserRole<TKey>
-        where TUserLogin : IdentityUserLogin<TKey>
-        where TRoleClaim : IdentityRoleClaim<TKey>
-        where TUserToken : IdentityUserToken<TKey>
+    public class IdentityRepository<TIdentityDbContext, TUser, TRole, TUserClaim, TUserRole, TUserLogin, TRoleClaim, TUserToken>
+        : IIdentityRepository<TUser, TRole, TUserClaim, TUserRole, TUserLogin, TRoleClaim, TUserToken>
+        where TIdentityDbContext : IdentityDbContext<TUser, TRole, string, TUserClaim, TUserRole, TUserLogin, TRoleClaim, TUserToken>, IAdminIdentityDbContext
+        where TUser : ApplicationUser<string>, new()
+        where TRole : IdentityRole<string>
+        where TUserClaim : IdentityUserClaim<string>
+        where TUserRole : IdentityUserRole<string>
+        where TUserLogin : IdentityUserLogin<string>
+        where TRoleClaim : IdentityRoleClaim<string>
+        where TUserToken : IdentityUserToken<string>
     {
         protected readonly TIdentityDbContext DbContext;
-        protected readonly ApplicationUserManager<TUser, TKey> UserManager;
+        protected readonly ApplicationUserManager<TUser> UserManager;
         protected readonly RoleManager<TRole> RoleManager;
         protected readonly IMapper Mapper;
 
         public bool AutoSaveChanges { get; set; } = true;
 
         public IdentityRepository(TIdentityDbContext dbContext,
-            ApplicationUserManager<TUser, TKey> userManager,
+            ApplicationUserManager<TUser> userManager,
             RoleManager<TRole> roleManager,
             IMapper mapper)
         {
@@ -52,13 +51,13 @@ namespace Skoruba.IdentityServer4.Admin.EntityFramework.Identity.Repositories
             Mapper = mapper;
         }
 
-        public virtual TKey ConvertKeyFromString(string id)
+        public virtual string ConvertKeyFromString(string id)
         {
             if (id == null)
             {
                 return default;
             }
-            return (TKey)TypeDescriptor.GetConverter(typeof(TKey)).ConvertFromInvariantString(id);
+            return (string)TypeDescriptor.GetConverter(typeof(string)).ConvertFromInvariantString(id);
         }
 
         public virtual Task<bool> ExistsUserAsync(string userId)
@@ -241,19 +240,19 @@ namespace Skoruba.IdentityServer4.Admin.EntityFramework.Identity.Repositories
             return pagedList;
         }
 
-        public virtual Task<TRole> GetRoleAsync(TKey roleId)
+        public virtual Task<TRole> GetRoleAsync(string roleId)
         {
             return RoleManager.Roles.Where(x => x.Id.Equals(roleId)).SingleOrDefaultAsync();
         }
 
-        public virtual async Task<(IdentityResult identityResult, TKey roleId)> CreateRoleAsync(TRole role)
+        public virtual async Task<(IdentityResult identityResult, string roleId)> CreateRoleAsync(TRole role)
         {
             var identityResult = await RoleManager.CreateAsync(role);
 
             return (identityResult, role.Id);
         }
 
-        public virtual async Task<(IdentityResult identityResult, TKey roleId)> UpdateRoleAsync(TRole role)
+        public virtual async Task<(IdentityResult identityResult, string roleId)> UpdateRoleAsync(TRole role)
         {
             var existingRole = await RoleManager.FindByIdAsync(role.Id.ToString());
             Mapper.Map(role, existingRole);
@@ -285,14 +284,14 @@ namespace Skoruba.IdentityServer4.Admin.EntityFramework.Identity.Repositories
         /// </summary>
         /// <param name="user"></param>
         /// <returns>This method returns identity result and new user id</returns>
-        public virtual async Task<(IdentityResult identityResult, TKey userId)> CreateUserAsync(TUser user)
+        public virtual async Task<(IdentityResult identityResult, string userId)> CreateUserAsync(TUser user)
         {
             var identityResult = await UserManager.CreateAsync(user);
 
             return (identityResult, user.Id);
         }
 
-        public virtual async Task<(IdentityResult identityResult, TKey userId)> UpdateUserAsync(TUser user)
+        public virtual async Task<(IdentityResult identityResult, string userId)> UpdateUserAsync(TUser user)
         {
             var userIdentity = await UserManager.FindByIdAsync(user.Id.ToString());
             Mapper.Map(user, userIdentity);

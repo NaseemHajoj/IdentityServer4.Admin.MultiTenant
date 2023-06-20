@@ -13,29 +13,28 @@ namespace Skoruba.IdentityServer4.Admin.BusinessLogic.Identity.Mappers.Configura
         IMapperConfigurationBuilder AddProfilesType(HashSet<Type> profileTypes);
 
         IMapperConfigurationBuilder UseIdentityMappingProfile<TUserDto, TRoleDto, TUser, TRole,
-            TKey, TUserClaim, TUserRole, TUserLogin, TRoleClaim, TUserToken,
+            TUserClaim, TUserRole, TUserLogin, TRoleClaim, TUserToken,
             TUsersDto, TRolesDto, TUserRolesDto, TUserClaimsDto,
             TUserProviderDto, TUserProvidersDto, TUserChangePasswordDto, TRoleClaimsDto,
             TUserClaimDto, TRoleClaimDto>()
-            where TUserDto : UserDto<TKey>
-            where TRoleDto : RoleDto<TKey>
-            where TUser : ApplicationUser<TKey>
-            where TRole : IdentityRole<TKey>
-            where TKey : IEquatable<TKey>
-            where TUserClaim : IdentityUserClaim<TKey>
-            where TUserRole : IdentityUserRole<TKey>
-            where TUserLogin : IdentityUserLogin<TKey>
-            where TRoleClaim : IdentityRoleClaim<TKey>
-            where TUserToken : IdentityUserToken<TKey>
-            where TUsersDto : UsersDto<TUserDto, TKey>
-            where TRolesDto : RolesDto<TRoleDto, TKey>
-            where TUserRolesDto : UserRolesDto<TRoleDto, TKey>
-            where TUserClaimsDto : UserClaimsDto<TUserClaimDto, TKey>
-            where TUserProviderDto : UserProviderDto<TKey>
-            where TUserProvidersDto : UserProvidersDto<TUserProviderDto, TKey>
-            where TUserChangePasswordDto : UserChangePasswordDto<TKey>
-            where TRoleClaimsDto : RoleClaimsDto<TRoleClaimDto, TKey>
-            where TUserClaimDto : UserClaimDto<TKey>
-            where TRoleClaimDto : RoleClaimDto<TKey>;
+            where TUserDto : UserDto<string>
+            where TRoleDto : RoleDto<string>
+            where TUser : ApplicationUser<string>
+            where TRole : IdentityRole<string>
+            where TUserClaim : IdentityUserClaim<string>
+            where TUserRole : IdentityUserRole<string>
+            where TUserLogin : IdentityUserLogin<string>
+            where TRoleClaim : IdentityRoleClaim<string>
+            where TUserToken : IdentityUserToken<string>
+            where TUsersDto : UsersDto<TUserDto, string>
+            where TRolesDto : RolesDto<TRoleDto, string>
+            where TUserRolesDto : UserRolesDto<TRoleDto, string>
+            where TUserClaimsDto : UserClaimsDto<TUserClaimDto, string>
+            where TUserProviderDto : UserProviderDto<string>
+            where TUserProvidersDto : UserProvidersDto<TUserProviderDto, string>
+            where TUserChangePasswordDto : UserChangePasswordDto<string>
+            where TRoleClaimsDto : RoleClaimsDto<TRoleClaimDto, string>
+            where TUserClaimDto : UserClaimDto<string>
+            where TRoleClaimDto : RoleClaimDto<string>;
     }
 }

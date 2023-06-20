@@ -5,6 +5,7 @@ using HealthChecks.UI.Client;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -65,8 +66,8 @@ namespace Skoruba.IdentityServer4.Admin.Api
             };
 
             services.AddAdminAspNetIdentityServices<AdminIdentityDbContext, IdentityServerPersistedGrantDbContext,
-                IdentityUserDto, IdentityRoleDto, ApplicationUser<string>, UserIdentityRole, string, UserIdentityUserClaim, UserIdentityUserRole,
-                UserIdentityUserLogin, UserIdentityRoleClaim, UserIdentityUserToken,
+                IdentityUserDto, IdentityRoleDto, ApplicationUser<string>, IdentityRole, IdentityUserClaim<string>, IdentityUserRole<string>,
+                IdentityUserLogin<string>, IdentityRoleClaim<string>, IdentityUserToken<string>,
                 IdentityUsersDto, IdentityRolesDto, IdentityUserRolesDto,
                 IdentityUserClaimsDto, IdentityUserProviderDto, IdentityUserProvidersDto, IdentityUserChangePasswordDto,
                 IdentityRoleClaimsDto, IdentityUserClaimDto, IdentityRoleClaimDto>(profileTypes);
@@ -76,8 +77,8 @@ namespace Skoruba.IdentityServer4.Admin.Api
             services.AddAdminApiCors(adminApiConfiguration);
 
             services.AddMvcServices<IdentityUserDto, IdentityRoleDto,
-                ApplicationUser<string>, UserIdentityRole, string, UserIdentityUserClaim, UserIdentityUserRole,
-                UserIdentityUserLogin, UserIdentityRoleClaim, UserIdentityUserToken,
+                ApplicationUser<string>, IdentityRole, IdentityUserClaim<string>, IdentityUserRole<string>,
+                IdentityUserLogin<string>, IdentityRoleClaim<string>, IdentityUserToken<string>,
                 IdentityUsersDto, IdentityRolesDto, IdentityUserRolesDto,
                 IdentityUserClaimsDto, IdentityUserProviderDto, IdentityUserProvidersDto, IdentityUserChangePasswordDto,
                 IdentityRoleClaimsDto, IdentityUserClaimDto, IdentityRoleClaimDto>();
@@ -150,7 +151,7 @@ namespace Skoruba.IdentityServer4.Admin.Api
 
         public virtual void RegisterAuthentication(IServiceCollection services)
         {
-            services.AddApiAuthentication<AdminIdentityDbContext, ApplicationUser<string>, UserIdentityRole, string>(Configuration);
+            services.AddApiAuthentication<AdminIdentityDbContext, ApplicationUser<string>, IdentityRole>(Configuration);
         }
 
         public virtual void RegisterAuthorization(IServiceCollection services)

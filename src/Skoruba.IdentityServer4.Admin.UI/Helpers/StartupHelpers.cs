@@ -16,6 +16,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.AspNetCore.Localization;
 using Microsoft.AspNetCore.Mvc.Localization;
 using Microsoft.AspNetCore.Mvc.Razor;
@@ -232,30 +233,29 @@ namespace Skoruba.IdentityServer4.Admin.UI.Helpers
         /// Register services for MVC and localization including available languages
         /// </summary>
         /// <param name="services"></param>
-        public static void AddMvcWithLocalization<TUserDto, TRoleDto, TUser, TRole, TKey, TUserClaim, TUserRole, TUserLogin, TRoleClaim, TUserToken,
+        public static void AddMvcWithLocalization<TUserDto, TRoleDto, TUser, TRole, TUserClaim, TUserRole, TUserLogin, TRoleClaim, TUserToken,
             TUsersDto, TRolesDto, TUserRolesDto, TUserClaimsDto,
             TUserProviderDto, TUserProvidersDto, TUserChangePasswordDto, TRoleClaimsDto, TUserClaimDto, TRoleClaimDto>
             (this IServiceCollection services, CultureConfiguration cultureConfiguration)
-            where TUserDto : UserDto<TKey>, new()
-            where TRoleDto : RoleDto<TKey>, new()
-            where TUser : IdentityUser<TKey>
-            where TRole : IdentityRole<TKey>
-            where TKey : IEquatable<TKey>
-            where TUserClaim : IdentityUserClaim<TKey>
-            where TUserRole : IdentityUserRole<TKey>
-            where TUserLogin : IdentityUserLogin<TKey>
-            where TRoleClaim : IdentityRoleClaim<TKey>
-            where TUserToken : IdentityUserToken<TKey>
-            where TUsersDto : UsersDto<TUserDto, TKey>
-            where TRolesDto : RolesDto<TRoleDto, TKey>
-            where TUserRolesDto : UserRolesDto<TRoleDto, TKey>
-            where TUserClaimsDto : UserClaimsDto<TUserClaimDto, TKey>
-            where TUserProviderDto : UserProviderDto<TKey>
-            where TUserProvidersDto : UserProvidersDto<TUserProviderDto, TKey>
-            where TUserChangePasswordDto : UserChangePasswordDto<TKey>
-            where TRoleClaimsDto : RoleClaimsDto<TRoleClaimDto, TKey>
-            where TUserClaimDto : UserClaimDto<TKey>
-            where TRoleClaimDto : RoleClaimDto<TKey>
+            where TUserDto : UserDto<string>, new()
+            where TRoleDto : RoleDto<string>, new()
+            where TUser : IdentityUser<string>
+            where TRole : IdentityRole<string>
+            where TUserClaim : IdentityUserClaim<string>
+            where TUserRole : IdentityUserRole<string>
+            where TUserLogin : IdentityUserLogin<string>
+            where TRoleClaim : IdentityRoleClaim<string>
+            where TUserToken : IdentityUserToken<string>
+            where TUsersDto : UsersDto<TUserDto, string>
+            where TRolesDto : RolesDto<TRoleDto, string>
+            where TUserRolesDto : UserRolesDto<TRoleDto, string>
+            where TUserClaimsDto : UserClaimsDto<TUserClaimDto, string>
+            where TUserProviderDto : UserProviderDto<string>
+            where TUserProvidersDto : UserProvidersDto<TUserProviderDto, string>
+            where TUserChangePasswordDto : UserChangePasswordDto<string>
+            where TRoleClaimsDto : RoleClaimsDto<TRoleClaimDto, string>
+            where TUserClaimDto : UserClaimDto<string>
+            where TRoleClaimDto : RoleClaimDto<string>
         {
             services.AddSingleton<ITempDataProvider, CookieTempDataProvider>();
 
@@ -279,7 +279,7 @@ namespace Skoruba.IdentityServer4.Admin.UI.Helpers
                 .AddDataAnnotationsLocalization()
                 .ConfigureApplicationPartManager(m =>
                 {
-                    m.FeatureProviders.Add(new GenericTypeControllerFeatureProvider<TUserDto, TRoleDto, TUser, TRole, TKey, TUserClaim, TUserRole, TUserLogin, TRoleClaim, TUserToken,
+                    m.FeatureProviders.Add(new GenericTypeControllerFeatureProvider<TUserDto, TRoleDto, TUser, TRole, TUserClaim, TUserRole, TUserLogin, TRoleClaim, TUserToken,
                         TUsersDto, TRolesDto, TUserRolesDto, TUserClaimsDto,
                         TUserProviderDto, TUserProvidersDto, TUserChangePasswordDto, TRoleClaimsDto, TUserClaimDto, TRoleClaimDto>());
                 });
@@ -309,20 +309,19 @@ namespace Skoruba.IdentityServer4.Admin.UI.Helpers
                 });
         }
 
-        public static void AddAuthenticationServicesStaging<TContext, TUserIdentity, TUserIdentityRole, TKey>(
+        public static void AddAuthenticationServicesStaging<TContext, TUserIdentity, TUserIdentityRole>(
             this IServiceCollection services)
             where TContext : DbContext 
-            where TUserIdentity : ApplicationUser<TKey>, new()
-            where TUserIdentityRole : class
-            where TKey : IEquatable<TKey>
+            where TUserIdentity : ApplicationUser<string>, new()
+            where TUserIdentityRole : IdentityRole<string>
         {
             services.AddIdentity<TUserIdentity, TUserIdentityRole>(options =>
             {
                 options.User.RequireUniqueEmail = true;
             })
                 .AddEntityFrameworkStores<TContext>()
-                .AddUserStore<ApplicationUserStore<TUserIdentity, TKey>>()
-                .AddUserManager<ApplicationUserManager<TUserIdentity, TKey>>()
+                .AddUserStore<ApplicationUserStore<TUserIdentity>>()
+                .AddUserManager<ApplicationUserManager<TUserIdentity>>()
                 .AddDefaultTokenProviders();
 
             services.AddAuthentication(options =>
@@ -348,12 +347,11 @@ namespace Skoruba.IdentityServer4.Admin.UI.Helpers
         /// <typeparam name="TUserIdentityRole"></typeparam>
         /// <param name="services"></param>
         /// <param name="adminConfiguration"></param>
-        public static void AddAuthenticationServices<TContext, TUserIdentity, TUserIdentityRole, TKey>(this IServiceCollection services,
+        public static void AddAuthenticationServices<TIdentityDbContext, TUserIdentity, TUserIdentityRole>(this IServiceCollection services,
             AdminConfiguration adminConfiguration, Action<IdentityOptions> identityOptionsAction, Action<AuthenticationBuilder> authenticationBuilderAction)
-            where TContext : DbContext 
-            where TUserIdentity : ApplicationUser<TKey>, new()
-            where TUserIdentityRole : class
-            where TKey : IEquatable<TKey>
+            where TIdentityDbContext : DbContext 
+            where TUserIdentity : ApplicationUser<string>, new()
+            where TUserIdentityRole : IdentityRole<string>
         {
             services.Configure<CookiePolicyOptions>(options =>
             {
@@ -367,20 +365,10 @@ namespace Skoruba.IdentityServer4.Admin.UI.Helpers
 
             services
                 .AddIdentity<TUserIdentity, TUserIdentityRole>(identityOptionsAction)
-                .AddEntityFrameworkStores<TContext>()
-                .AddUserStore<ApplicationUserStore<TUserIdentity, TKey>>()
-                .AddUserManager<ApplicationUserManager<TUserIdentity, TKey>>()
+                .AddEntityFrameworkStores<TIdentityDbContext>()
+                .AddUserStore<ApplicationUserStore<TUserIdentity>>()
+                .AddUserManager<ApplicationUserManager<TUserIdentity>>()
                 .AddDefaultTokenProviders();
-
-            services.AddScoped<ApplicationUserStore<ApplicationUser<string>, string>>(x =>
-            {
-                return (ApplicationUserStore<ApplicationUser<string>, string>)x.GetRequiredService<IUserStore<ApplicationUser<string>>>();
-            });
-
-            services.AddScoped<ApplicationUserManager<ApplicationUser<string>, string>>(x =>
-            {
-                return (ApplicationUserManager<ApplicationUser<string>, string>)x.GetRequiredService<UserManager<ApplicationUser<string>>>();
-            });
 
             var authenticationBuilder = services.AddAuthentication(options =>
             {

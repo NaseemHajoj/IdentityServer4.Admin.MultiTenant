@@ -8,17 +8,17 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
 using Skoruba.IdentityServer4.Admin.EntityFramework.Shared.Entities.Identity;
+using Skoruba.IdentityServer4.Admin.EntityFramework.Shared.Interfaces;
 
 namespace Skoruba.IdentityServer4.Admin.EntityFramework.Shared.Identity
 {
-    public class ApplicationUserManager<TUser, TKey> : UserManager<TUser>
-        where TUser : ApplicationUser<TKey>, new()
-        where TKey : IEquatable<TKey>
+    public class ApplicationUserManager<TUser> : UserManager<TUser>, IMultitenantUserManager<TUser>
+        where TUser : ApplicationUser<string>, new()
     {
         private readonly IServiceProvider _services;
 
         public ApplicationUserManager(
-            ApplicationUserStore<TUser, TKey> store, 
+            IUserStore<TUser> store, 
             IOptions<IdentityOptions> optionsAccessor, 
             IPasswordHasher<TUser> passwordHasher, 
             IEnumerable<IUserValidator<TUser>> userValidators, 
@@ -26,7 +26,7 @@ namespace Skoruba.IdentityServer4.Admin.EntityFramework.Shared.Identity
             ILookupNormalizer keyNormalizer, 
             IdentityErrorDescriber errors, 
             IServiceProvider services, 
-            ILogger<UserManager<TUser>> logger) 
+            ILogger<ApplicationUserManager<TUser>> logger) 
             : base(store, optionsAccessor, passwordHasher, userValidators, passwordValidators, keyNormalizer, errors, services, logger)
         {
             this._services = services;
@@ -47,15 +47,16 @@ namespace Skoruba.IdentityServer4.Admin.EntityFramework.Shared.Identity
                 var protector = _services.GetService<ILookupProtector>();
                 if (keyRing != null && protector != null)
                 {
-                    foreach (var key in keyRing.GetAllKeyIds())
-                    {
-                        var oldKey = protector.Protect(key, email);
-                        user = await store.FindByEmailAsync(oldKey, CancellationToken);
-                        if (user != null)
-                        {
-                            return user;
-                        }
-                    }
+                    // TODO: figure this out ?
+                    //foreach (var key in keyRing.GetAllKeyIds())
+                    //{
+                    //    var oldKey = protector.Protect(key, email);
+                    //    user = await store.FindByEmailAsync(oldKey, this.CancellationToken);
+                    //    if (user != null)
+                    //    {
+                    //        return user;
+                    //    }
+                    //}
                 }
             }
 
@@ -73,9 +74,26 @@ namespace Skoruba.IdentityServer4.Admin.EntityFramework.Shared.Identity
             return this.GetApplicationUserStore().FindByNameAsync(userName, tenant);
         }
 
-        private ApplicationUserStore<TUser, TKey> GetApplicationUserStore()
+        private IMultitenantUserStore<TUser> GetApplicationUserStore()
         {
-            return this.Store as ApplicationUserStore<TUser, TKey>;
+            return this.Store as IMultitenantUserStore<TUser>;
+        }
+    }
+
+    public class ApplicationUserManager : ApplicationUserManager<ApplicationUser<string>>
+    {
+        public ApplicationUserManager(
+            IUserStore<ApplicationUser<string>> store, 
+            IOptions<IdentityOptions> optionsAccessor, 
+            IPasswordHasher<ApplicationUser<string>> passwordHasher, 
+            IEnumerable<IUserValidator<ApplicationUser<string>>> userValidators, 
+            IEnumerable<IPasswordValidator<ApplicationUser<string>>> passwordValidators, 
+            ILookupNormalizer keyNormalizer, 
+            IdentityErrorDescriber errors, 
+            IServiceProvider services, 
+            ILogger<ApplicationUserManager<ApplicationUser<string>>> logger) 
+            : base(store, optionsAccessor, passwordHasher, userValidators, passwordValidators, keyNormalizer, errors, services, logger)
+        {
         }
     }
 }

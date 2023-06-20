@@ -1,11 +1,13 @@
 using System.IdentityModel.Tokens.Jwt;
-using System.Reflection;
+
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+
 using Skoruba.AuditLogging.EntityFramework.Entities;
 using Skoruba.IdentityServer4.Admin.Configuration.Database;
 using Skoruba.IdentityServer4.Admin.EntityFramework.Shared.DbContexts;
@@ -35,8 +37,8 @@ namespace Skoruba.IdentityServer4.Admin
             // Adds the IdentityServer4 Admin UI with custom options.
             services.AddIdentityServer4AdminUI<AdminIdentityDbContext, IdentityServerConfigurationDbContext, IdentityServerPersistedGrantDbContext,
             AdminLogDbContext, AdminAuditLogDbContext, AuditLog, IdentityServerDataProtectionDbContext,
-                ApplicationUser<string>, UserIdentityRole, UserIdentityUserClaim, UserIdentityUserRole,
-                UserIdentityUserLogin, UserIdentityRoleClaim, UserIdentityUserToken, string,
+                ApplicationUser<string>, IdentityRole, IdentityUserClaim<string>, IdentityUserRole<string>,
+                IdentityUserLogin<string>, IdentityRoleClaim<string>, IdentityUserToken<string>,
                 IdentityUserDto, IdentityRoleDto, IdentityUsersDto, IdentityRolesDto, IdentityUserRolesDto,
                 IdentityUserClaimsDto, IdentityUserProviderDto, IdentityUserProvidersDto, IdentityUserChangePasswordDto,
                 IdentityRoleClaimsDto, IdentityUserClaimDto, IdentityRoleClaimDto>(ConfigureUIOptions);

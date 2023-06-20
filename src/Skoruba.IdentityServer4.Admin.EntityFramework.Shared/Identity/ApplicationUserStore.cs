@@ -1,5 +1,4 @@
-﻿using System;
-using System.Threading;
+﻿using System.Threading;
 using System.Threading.Tasks;
 
 using Microsoft.AspNetCore.Identity;
@@ -8,6 +7,7 @@ using Microsoft.EntityFrameworkCore;
 
 using Skoruba.IdentityServer4.Admin.EntityFramework.Shared.DbContexts;
 using Skoruba.IdentityServer4.Admin.EntityFramework.Shared.Entities.Identity;
+using Skoruba.IdentityServer4.Admin.EntityFramework.Shared.Interfaces;
 
 namespace Skoruba.IdentityServer4.Admin.EntityFramework.Shared.Identity
 {
@@ -15,9 +15,8 @@ namespace Skoruba.IdentityServer4.Admin.EntityFramework.Shared.Identity
     /// Extending the <see cref="UserStore{TUser}"/> class to make store aware of tenant.
     /// </summary>
     /// <typeparam name="TUser"></typeparam>
-    public class ApplicationUserStore<TUser, TKey> : UserStore<TUser, IdentityRole<TKey>, AdminIdentityDbContext, TKey>
-        where TUser : ApplicationUser<TKey>, new()
-        where TKey : IEquatable<TKey>
+    public class ApplicationUserStore<TUser> : UserStore<TUser>, IMultitenantUserStore<TUser>
+        where TUser : ApplicationUser<string>, new()
     {
         public ApplicationUserStore(
             AdminIdentityDbContext context, 
@@ -54,6 +53,16 @@ namespace Skoruba.IdentityServer4.Admin.EntityFramework.Shared.Identity
         private string NormalizeTenantName(string tenantName)
         {
             return tenantName.Trim().ToUpper();
+        }
+    }
+
+    public class ApplicationUserStore : ApplicationUserStore<ApplicationUser<string>>
+    {
+        public ApplicationUserStore(
+            AdminIdentityDbContext context, 
+            IdentityErrorDescriber describer = null) 
+            : base(context, describer)
+        {
         }
     }
 }

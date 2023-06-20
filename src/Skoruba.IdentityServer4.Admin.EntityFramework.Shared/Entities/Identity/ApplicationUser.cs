@@ -56,6 +56,10 @@ namespace Skoruba.IdentityServer4.Admin.EntityFramework.Shared.Entities.Identity
         public Tenant Tenant { get; set; }
     }
 
+    public class ApplicationUser : ApplicationUser<string>
+    {
+    }
+
     public class ApplicationUserEntityTypeConfiguration<TKey> : IEntityTypeConfiguration<ApplicationUser<TKey>>
         where TKey : IEquatable<TKey>
     {

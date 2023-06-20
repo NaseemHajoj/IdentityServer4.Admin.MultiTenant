@@ -3,6 +3,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Serilog;
@@ -67,7 +68,7 @@ namespace Skoruba.IdentityServer4.Admin
             return await DbMigrationHelpers
                 .ApplyDbMigrationsWithDataSeedAsync<IdentityServerConfigurationDbContext, AdminIdentityDbContext,
                     IdentityServerPersistedGrantDbContext, AdminLogDbContext, AdminAuditLogDbContext,
-                    IdentityServerDataProtectionDbContext, ApplicationUser<string>, UserIdentityRole>(host,
+                    IdentityServerDataProtectionDbContext, ApplicationUser<string>, IdentityRole>(host,
                     applyDbMigrationWithDataSeedFromProgramArguments, seedConfiguration, databaseMigrationsConfiguration);
         }
 
