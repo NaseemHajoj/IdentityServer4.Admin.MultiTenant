@@ -29,7 +29,7 @@ namespace Skoruba.IdentityServer4.Admin.UI.Areas.AdminUI.Controllers
             TUserProviderDto, TUserProvidersDto, TUserChangePasswordDto, TRoleClaimsDto, TUserClaimDto, TRoleClaimDto> : BaseController
         where TUserDto : UserDto<string>, new()
         where TRoleDto : RoleDto<string>, new()
-        where TUser : ApplicationUser<string>
+        where TUser : ApplicationUser<string>, new()
         where TRole : IdentityRole<string>
         where TUserClaim : IdentityUserClaim<string>
         where TUserRole : IdentityUserRole<string>
@@ -54,7 +54,7 @@ namespace Skoruba.IdentityServer4.Admin.UI.Areas.AdminUI.Controllers
             TUsersDto, TRolesDto, TUserRolesDto, TUserClaimsDto,
             TUserProviderDto, TUserProvidersDto, TUserChangePasswordDto, TRoleClaimsDto, TUserClaimDto, TRoleClaimDto>> _localizer;
 
-        private readonly ITenantsManager tenantsManager;
+        private readonly ITenantsManager<TUser> tenantsManager;
 
         public IdentityController(IIdentityService<TUserDto, TRoleDto, TUser, TRole, TUserClaim, TUserRole, TUserLogin, TRoleClaim, TUserToken,
                 TUsersDto, TRolesDto, TUserRolesDto, TUserClaimsDto,
@@ -63,7 +63,7 @@ namespace Skoruba.IdentityServer4.Admin.UI.Areas.AdminUI.Controllers
             IGenericControllerLocalizer<IdentityController<TUserDto, TRoleDto, TUser, TRole, TUserClaim, TUserRole, TUserLogin, TRoleClaim, TUserToken,
                 TUsersDto, TRolesDto, TUserRolesDto, TUserClaimsDto,
                 TUserProviderDto, TUserProvidersDto, TUserChangePasswordDto, TRoleClaimsDto, TUserClaimDto, TRoleClaimDto>> localizer,
-            ITenantsManager tenantsManager) : base(logger)
+            ITenantsManager<TUser> tenantsManager) : base(logger)
         {
             _identityService = identityService;
             _localizer = localizer;

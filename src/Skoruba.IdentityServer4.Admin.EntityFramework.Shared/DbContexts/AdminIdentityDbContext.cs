@@ -32,14 +32,14 @@ namespace Skoruba.IdentityServer4.Admin.EntityFramework.Shared.DbContexts
 
         private void ConfigureIdentityContext(ModelBuilder builder)
         {
-            builder.Entity<IdentityRole>().ToTable(TableConsts.IdentityRoles);
-            builder.Entity<IdentityRoleClaim<string>>().ToTable(TableConsts.IdentityRoleClaims);
-            builder.Entity<IdentityUserRole<string>>().ToTable(TableConsts.IdentityUserRoles);
+            //builder.Entity<IdentityRole>().ToTable(TableConsts.IdentityRoles);
+            //builder.Entity<IdentityRoleClaim<string>>().ToTable(TableConsts.IdentityRoleClaims);
+            //builder.Entity<IdentityUserRole<string>>().ToTable(TableConsts.IdentityUserRoles);
 
-            builder.Entity<ApplicationUser<string>>().ToTable(TableConsts.IdentityUsers);
-            builder.Entity<IdentityUserLogin<string>>().ToTable(TableConsts.IdentityUserLogins);
-            builder.Entity<IdentityUserClaim<string>>().ToTable(TableConsts.IdentityUserClaims);
-            builder.Entity<IdentityUserToken<string>>().ToTable(TableConsts.IdentityUserTokens);
+            //builder.Entity<ApplicationUser<string>>().ToTable(TableConsts.IdentityUsers);
+            //builder.Entity<IdentityUserLogin<string>>().ToTable(TableConsts.IdentityUserLogins);
+            //builder.Entity<IdentityUserClaim<string>>().ToTable(TableConsts.IdentityUserClaims);
+            //builder.Entity<IdentityUserToken<string>>().ToTable(TableConsts.IdentityUserTokens);
         }
     }
 }

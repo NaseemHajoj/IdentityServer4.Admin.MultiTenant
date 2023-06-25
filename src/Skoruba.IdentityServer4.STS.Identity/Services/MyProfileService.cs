@@ -57,7 +57,7 @@ namespace Skoruba.IdentityServer4.STS.Identity.Services
 
 				// this will filter out the claims given context.RequestedClaimTypes which are defined
 				// in IdentityServerConfigs and add the filtered claims to the context.
-				context.AddRequestedClaims(claims);
+				context.IssuedClaims.AddRange(claims);
 			}
 			catch (Exception ex)
 			{

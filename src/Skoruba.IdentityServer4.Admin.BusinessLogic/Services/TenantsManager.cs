@@ -1,40 +1,54 @@
 ﻿using System;
+using System.Data;
+using System.Linq;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-
 using AutoMapper;
 
+using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Logging;
 
 using Skoruba.AuditLogging.Services;
 using Skoruba.IdentityServer4.Admin.BusinessLogic.Identity.Dtos.Identity;
 using Skoruba.IdentityServer4.Admin.BusinessLogic.Identity.Events.Identity;
 using Skoruba.IdentityServer4.Admin.BusinessLogic.Services.Interfaces;
+using Skoruba.IdentityServer4.Admin.EntityFramework.Configuration.Configuration.Identity;
 using Skoruba.IdentityServer4.Admin.EntityFramework.Extensions.Common;
 using Skoruba.IdentityServer4.Admin.EntityFramework.Identity.Repositories.Interfaces;
 using Skoruba.IdentityServer4.Admin.EntityFramework.Shared.Entities.Identity;
+using Skoruba.IdentityServer4.Admin.EntityFramework.Shared.Identity;
 
 namespace Skoruba.IdentityServer4.Admin.BusinessLogic.Services
 {
-    public class TenantsManager : ITenantsManager
-	{
+    public class TenantsManager<TUser> : ITenantsManager<TUser>
+		where TUser : ApplicationUser<string>, new()
+    {
 		private readonly ITenantsRepository tenantsRepository;
+
+		private readonly ApplicationUserManager<TUser> applicationUserManager;
 
 		private readonly IMapper mapper;
 
 		private readonly IAuditEventLogger auditEventLogger;
 
-		private readonly ILogger<TenantsManager> logger;
+        private readonly IPasswordGenerator passwordGenerator;
+
+		private readonly ILogger<TenantsManager<TUser>> logger;
 
 		public TenantsManager(
 			ITenantsRepository tenantsRepository,
+			ApplicationUserManager<TUser> applicationUserManager,
 			IMapper mapper,
 			IAuditEventLogger auditEventLogger,
-			ILogger<TenantsManager> logger) 
+            IPasswordGenerator passwordGenerator,
+			ILogger<TenantsManager<TUser>> logger) 
 		{
 			this.tenantsRepository = tenantsRepository;
-			this.mapper = mapper;
+			this.applicationUserManager = applicationUserManager;
+            this.mapper = mapper;
 			this.auditEventLogger = auditEventLogger;
+            this.passwordGenerator = passwordGenerator;
 			this.logger = logger;
 		}
 
@@ -44,8 +58,23 @@ namespace Skoruba.IdentityServer4.Admin.BusinessLogic.Services
 
             tenant = await this.tenantsRepository.CreateTenantAsync(tenant, cancellationToken);
 
+			this.logger.LogDebug("New tenant was created with Id \"{TenantId\" and Name \"{TenantName}\"", tenant.Id, tenant.Name);
+
 			// get the newly created tenant dto
             TenantDto newlyCreatedTenant = this.mapper.Map<TenantDto>(tenant);
+
+            var adminUser = new TUser
+            {
+                Id = Guid.NewGuid().ToString(),
+                UserName = "admin",
+                FirstName = "Ahmad",
+                LastName = "Khaldi",
+                Email = tenant.Email,
+                EmailConfirmed = false,
+                TenantId = tenant.Id
+            };
+
+            this.applicationUserManager.CreateAsync(adminUser);
 
             await this.auditEventLogger.LogEventAsync(new TenantCreatedEvent<TenantDto>(newlyCreatedTenant));
 
@@ -101,5 +130,50 @@ namespace Skoruba.IdentityServer4.Admin.BusinessLogic.Services
 
 			return tenantsDto;
 		}
-	}
+
+        private async Task<(TUser, string)> CreateTenantAdmin(Tenant tenant)
+        {
+            // create the tenant admin user.
+            var tenantAdmin = new TUser
+            {
+                Id = Guid.NewGuid().ToString(),
+                UserName = "Admin",
+                Email = tenant.Email,
+                FirstName = "Admin",
+                LastName = string.Empty,
+                TenantId = tenant.Id
+            };
+
+            string password = this.passwordGenerator.GeneratePassword();
+
+            IdentityResult result = await this.applicationUserManager.CreateAsync(tenantAdmin, password);
+
+            if (!result.Succeeded)
+            {
+                var errorMessage = new StringBuilder();
+                errorMessage.AppendLine($"Failed to create Admin user for tenant {tenant}.");
+                errorMessage.AppendLine("Errors: ");
+                errorMessage.AppendJoin(Environment.NewLine, result.Errors.Select(o => $"Code: {o.Code}    Description: {o.Description}."));
+
+                throw new Exception(errorMessage.ToString());
+            }
+
+            tenantAdmin = await this.applicationUserManager.FindByEmailAsync(tenant.Email);
+            result = await this.applicationUserManager.AddToRoleAsync(tenantAdmin, "tenant_admin");
+
+            if (!result.Succeeded)
+            {
+                var errorMessage = new StringBuilder();
+                errorMessage.AppendLine($"Failed to add Admin user for tenant {tenant} to admin role.");
+                errorMessage.AppendLine("Errors: ");
+                errorMessage.AppendJoin(Environment.NewLine, result.Errors.Select(o => $"Code: {o.Code}    Description: {o.Description}."));
+
+                throw new Exception(errorMessage.ToString());
+            }
+
+            this.logger.LogInformation("Admin user was created successfully for tenant {tenant}.", tenant);
+
+            return (tenantAdmin, password);
+        }
+    }
 }

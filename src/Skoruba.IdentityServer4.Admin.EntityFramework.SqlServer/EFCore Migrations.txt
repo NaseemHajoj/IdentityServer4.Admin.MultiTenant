@@ -1,0 +1,18 @@
+/* Identity (Main) Database Context */ 
+dotnet ef migrations add DbInit -c AdminIdentityDbContext -o Migrations/Identity --project src/Skoruba.IdentityServer4.Admin.EntityFramework.SqlServer --startup-project src/Skoruba.IdentityServer4.Admin
+
+/* Data Protection Database Context */ 
+dotnet ef migrations add DbInit -c IdentityServerDataProtectionDbContext -o Migrations/DataProtection --project src/Skoruba.IdentityServer4.Admin.EntityFramework.SqlServer --startup-project src/Skoruba.IdentityServer4.Admin
+
+/* Audit Logging Database Context */ 
+dotnet ef migrations add DbInit -c AdminAuditLogDbContext -o Migrations/AuditLogging --project src/Skoruba.IdentityServer4.Admin.EntityFramework.SqlServer --startup-project src/Skoruba.IdentityServer4.Admin
+
+/* Identity Server Configuration Database Context */ 
+dotnet ef migrations add DbInit -c IdentityServerConfigurationDbContext -o Migrations/IdentityServerConfiguration --project src/Skoruba.IdentityServer4.Admin.EntityFramework.SqlServer --startup-project src/Skoruba.IdentityServer4.Admin
+
+/* Identity Server Persisted Grant Database Context */ 
+dotnet ef migrations add DbInit -c IdentityServerPersistedGrantDbContext -o Migrations/IdentityServerGrants --project src/Skoruba.IdentityServer4.Admin.EntityFramework.SqlServer --startup-project src/Skoruba.IdentityServer4.Admin
+
+/* Identity Server Logging Database Context */ 
+dotnet ef migrations add DbInit -c AdminLogDbContext -o Migrations/Logging --project src/Skoruba.IdentityServer4.Admin.EntityFramework.SqlServer --startup-project src/Skoruba.IdentityServer4.Admin
+

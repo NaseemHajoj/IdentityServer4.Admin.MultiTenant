@@ -178,8 +178,10 @@ namespace Microsoft.Extensions.DependencyInjection
             services.AddSingleton(options.Http);
             services.AddTransient<IStartupFilter, StartupFilter>();
 
-            services.AddScoped<ITenantsManager, TenantsManager>();
+            services.AddScoped<ITenantsManager<ApplicationUser<string>>, TenantsManager<ApplicationUser<string>>>();
             services.AddScoped<ITenantsRepository, TenantsRepository>();
+
+            services.AddScoped<IPasswordGenerator, PasswordGenerator>();
 
             return services;
         }
