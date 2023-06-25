@@ -39,6 +39,7 @@
 
     <!--Hidden -->
     <input type="hidden" asp-for="Id" />
+    <input type="hidden" asp-for="IsActive" />
 
     <div class="card mt-3">
         <h5 class="card-header">@Localizer["PanelTitle"]</h5>
@@ -65,6 +66,8 @@
                             }
                             else
                             {
+                                <input type="hidden" asp-for="Name" />
+
                                 <label asp-for="Name" class="col-sm-3 col-form-label">
                                     @Model.Name
                                 </label>

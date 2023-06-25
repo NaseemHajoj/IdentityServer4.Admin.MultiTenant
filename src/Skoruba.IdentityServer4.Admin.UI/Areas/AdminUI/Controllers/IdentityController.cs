@@ -2,16 +2,17 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+
 using IdentityServer4.Extensions;
+
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 
-using MySqlConnector;
-
 using Skoruba.IdentityServer4.Admin.BusinessLogic.Identity.Dtos.Identity;
 using Skoruba.IdentityServer4.Admin.BusinessLogic.Identity.Services.Interfaces;
+using Skoruba.IdentityServer4.Admin.BusinessLogic.Services.Interfaces;
 using Skoruba.IdentityServer4.Admin.BusinessLogic.Shared.Dtos.Common;
 using Skoruba.IdentityServer4.Admin.EntityFramework.Shared.Entities.Identity;
 using Skoruba.IdentityServer4.Admin.UI.Configuration.Constants;
@@ -20,7 +21,7 @@ using Skoruba.IdentityServer4.Admin.UI.Helpers.Localization;
 
 namespace Skoruba.IdentityServer4.Admin.UI.Areas.AdminUI.Controllers
 {
-    [Authorize(Policy = AuthorizationConsts.AdministrationPolicy)]
+	[Authorize(Policy = AuthorizationConsts.AdministrationPolicy)]
     [TypeFilter(typeof(ControllerExceptionFilterAttribute))]
     [Area(CommonConsts.AdminUIArea)]
     public class IdentityController<TUserDto, TRoleDto, TUser, TRole, TUserClaim, TUserRole, TUserLogin, TRoleClaim, TUserToken,
@@ -53,16 +54,20 @@ namespace Skoruba.IdentityServer4.Admin.UI.Areas.AdminUI.Controllers
             TUsersDto, TRolesDto, TUserRolesDto, TUserClaimsDto,
             TUserProviderDto, TUserProvidersDto, TUserChangePasswordDto, TRoleClaimsDto, TUserClaimDto, TRoleClaimDto>> _localizer;
 
+        private readonly ITenantsManager tenantsManager;
+
         public IdentityController(IIdentityService<TUserDto, TRoleDto, TUser, TRole, TUserClaim, TUserRole, TUserLogin, TRoleClaim, TUserToken,
                 TUsersDto, TRolesDto, TUserRolesDto, TUserClaimsDto,
                 TUserProviderDto, TUserProvidersDto, TUserChangePasswordDto, TRoleClaimsDto, TUserClaimDto, TRoleClaimDto> identityService,
             ILogger<ConfigurationController> logger,
             IGenericControllerLocalizer<IdentityController<TUserDto, TRoleDto, TUser, TRole, TUserClaim, TUserRole, TUserLogin, TRoleClaim, TUserToken,
                 TUsersDto, TRolesDto, TUserRolesDto, TUserClaimsDto,
-                TUserProviderDto, TUserProvidersDto, TUserChangePasswordDto, TRoleClaimsDto, TUserClaimDto, TRoleClaimDto>> localizer) : base(logger)
+                TUserProviderDto, TUserProvidersDto, TUserChangePasswordDto, TRoleClaimsDto, TUserClaimDto, TRoleClaimDto>> localizer,
+            ITenantsManager tenantsManager) : base(logger)
         {
             _identityService = identityService;
             _localizer = localizer;
+            this.tenantsManager = tenantsManager;
         }
 
         [HttpGet]
@@ -118,7 +123,7 @@ namespace Skoruba.IdentityServer4.Admin.UI.Areas.AdminUI.Controllers
         public async Task<IActionResult> Tenants(int? page, string search)
         {
             ViewBag.Search = search;
-            var tenantsDto = await _identityService.GetTenantsAsync(search, page ?? 1);
+            var tenantsDto = await this.tenantsManager.GetTenantsAsync(search, page ?? 1);
 
             return View(tenantsDto);
         }
@@ -132,7 +137,7 @@ namespace Skoruba.IdentityServer4.Admin.UI.Areas.AdminUI.Controllers
                 return this.View(nameof(this.TenantProfile), newTenant);
             }
 
-            TenantDto tenant = await this._identityService.GetTenantAsync(id);
+            TenantDto tenant = await this.tenantsManager.GetTenantAsync(id);
             if (tenant == null)
             {
                 return this.NotFound();
@@ -156,14 +161,14 @@ namespace Skoruba.IdentityServer4.Admin.UI.Areas.AdminUI.Controllers
             {
                 // creating a new tenant
                 tenant.IsActive = true;
-                var tenantCreation = await _identityService.CreateTenantAsync(tenant);
-                tenantId = tenantCreation.tenantId;
+				TenantDto tenantCreation = await this.tenantsManager.CreateNewTenantAsync(tenant);
+                tenantId = tenantCreation.Id;
             }
             else
             {
                 // updating existing tenant
-                var tenantCreation = await _identityService.UpdateTenantAsync(tenant);
-                tenantId = tenantCreation.tenantId;
+                TenantDto tenantUpdate = await this.tenantsManager.UpdateTenantAsync(tenant);
+                tenantId = tenantUpdate.Id;
             }
 
             this.SuccessNotification(string.Format(this._localizer["SuccessCreateTenant"], tenant.Name), this._localizer["SuccessTitle"]);
@@ -179,7 +184,7 @@ namespace Skoruba.IdentityServer4.Admin.UI.Areas.AdminUI.Controllers
                 return this.NotFound();
             }
 
-            TenantDto tenant = await _identityService.GetTenantAsync(id);
+            TenantDto tenant = await this.tenantsManager.GetTenantAsync(id);
             if (tenant == null)
             {
                 return this.NotFound();
@@ -195,17 +200,15 @@ namespace Skoruba.IdentityServer4.Admin.UI.Areas.AdminUI.Controllers
             var currentUserId = User.GetSubjectId();
             if (tenant.Name == "System")
             {
-                CreateNotification(Helpers.NotificationHelpers.AlertType.Warning, _localizer["ErrorDeleteTenant_CannotDeleteSystemTenant"]);
-                return RedirectToAction(nameof(TenantDelete), tenant.Id);
+                this.CreateNotification(Helpers.NotificationHelpers.AlertType.Warning, _localizer["ErrorDeleteTenant_CannotDeleteSystemTenant"]);
+                return this.RedirectToAction(nameof(TenantDelete), tenant.Id);
             }
-            else
-            {
-                await _identityService.DeleteTenantAsync(tenant);
-                SuccessNotification(_localizer["SuccessDeleteTenant"], _localizer["SuccessTitle"]);
 
-                return RedirectToAction(nameof(Tenants));
-            }
-        }
+			await this.tenantsManager.DeleteTenantAsync(tenant);
+			this.SuccessNotification(_localizer["SuccessDeleteTenant"], _localizer["SuccessTitle"]);
+
+			return this.RedirectToAction(nameof(Tenants));
+		}
 
         [HttpGet]
         public async Task<IActionResult> Users(int? page, string search)

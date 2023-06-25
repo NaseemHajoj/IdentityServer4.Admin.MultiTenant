@@ -5,7 +5,7 @@ namespace Skoruba.IdentityServer4.Admin.EntityFramework.Configuration.Configurat
 {
 	public class IdentityData
     {
-       public Tenant SystemTenant { get; set; }
+       public TenantInformation SystemTenant { get; set; }
        public List<Role> Roles { get; set; }
        public List<User> Users { get; set; }
     }

@@ -40,16 +40,6 @@ namespace Skoruba.IdentityServer4.Admin.EntityFramework.Identity.Repositories.In
 
         Task<TUser> GetUserAsync(string userId);
 
-        Task<PagedList<Tenant>> GetTenantsAsync(string search, int page = 1, int pageSize = 10);
-
-        Task<Tenant> GetTenantAsync(Guid tenantId);
-
-        Task<(IdentityResult identityResult, Guid tenantId)> CreateTenantAsync(Tenant tenant);
-
-        Task<(IdentityResult identityResult, Guid tenantId)> UpdateTenantAsync(Tenant tenant);
-
-        Task<IdentityResult> DeleteTenantAsync(Guid tenantId);
-
         Task<(IdentityResult identityResult, string userId)> CreateUserAsync(TUser user);
 
         Task<(IdentityResult identityResult, string userId)> UpdateUserAsync(TUser user);

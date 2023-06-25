@@ -10,6 +10,9 @@ using Microsoft.EntityFrameworkCore;
 using Skoruba.AuditLogging.EntityFramework.DbContexts;
 using Skoruba.AuditLogging.EntityFramework.Entities;
 using Skoruba.IdentityServer4.Admin.BusinessLogic.Identity.Dtos.Identity;
+using Skoruba.IdentityServer4.Admin.BusinessLogic.Services;
+using Skoruba.IdentityServer4.Admin.BusinessLogic.Services.Interfaces;
+using Skoruba.IdentityServer4.Admin.EntityFramework.Identity.Repositories.Interfaces;
 using Skoruba.IdentityServer4.Admin.EntityFramework.Shared.Entities.Identity;
 using Skoruba.IdentityServer4.Admin.EntityFramework.Shared.Interfaces;
 using Skoruba.IdentityServer4.Admin.UI.Helpers;
@@ -174,6 +177,9 @@ namespace Microsoft.Extensions.DependencyInjection
             services.AddSingleton(options.Security);
             services.AddSingleton(options.Http);
             services.AddTransient<IStartupFilter, StartupFilter>();
+
+            services.AddScoped<ITenantsManager, TenantsManager>();
+            services.AddScoped<ITenantsRepository, TenantsRepository>();
 
             return services;
         }

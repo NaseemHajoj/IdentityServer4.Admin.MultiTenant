@@ -119,7 +119,8 @@ namespace Skoruba.IdentityServer4.Admin.BusinessLogic.Identity.Mappers
                 .ForMember(dest => dest.Id, opt => opt.Condition(srs => srs.Id != null));
 
             CreateMap<TenantDto, Tenant>(MemberList.Source)
-                .ForMember(dest => dest.Id, opt => opt.Condition(srs => srs.Id != Guid.Empty));
+                .ForMember(dest => dest.Id, opt => opt.Condition(srs => srs.Id != Guid.Empty))
+                .ForMember(dest => dest.NormalizedName, opt => opt.MapFrom(src => src.Name.ToUpper()));
         }
     }
 }

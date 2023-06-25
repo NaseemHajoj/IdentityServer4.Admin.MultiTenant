@@ -1,19 +1,25 @@
+using System;
+
 using HealthChecks.UI.Client;
+
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+
+using Skoruba.IdentityServer4.Admin.BusinessLogic.Services;
+using Skoruba.IdentityServer4.Admin.EntityFramework.Identity.Repositories.Interfaces;
 using Skoruba.IdentityServer4.Admin.EntityFramework.Shared.DbContexts;
 using Skoruba.IdentityServer4.Admin.EntityFramework.Shared.Entities.Identity;
+using Skoruba.IdentityServer4.Shared.Configuration.Helpers;
 using Skoruba.IdentityServer4.STS.Identity.Configuration;
 using Skoruba.IdentityServer4.STS.Identity.Configuration.Constants;
 using Skoruba.IdentityServer4.STS.Identity.Configuration.Interfaces;
 using Skoruba.IdentityServer4.STS.Identity.Helpers;
-using System;
-using Skoruba.IdentityServer4.Shared.Configuration.Helpers;
-using Microsoft.AspNetCore.Identity;
+using Skoruba.IdentityServer4.STS.Identity.Services;
 
 namespace Skoruba.IdentityServer4.STS.Identity
 {
@@ -47,10 +53,13 @@ namespace Skoruba.IdentityServer4.STS.Identity
             // Add HSTS options
             RegisterHstsOptions(services);
 
-            // Add all dependencies for Asp.Net Core Identity in MVC - these dependencies are injected into generic Controllers
-            // Including settings for MVC and Localization
-            // If you want to change primary keys or use another db model for Asp.Net Core Identity:
-            services.AddMvcWithLocalization<ApplicationUser<string>, string>(Configuration);
+            services.AddScoped<ITenantStore, TenantStore>();
+			services.AddScoped<ITenantsRepository, TenantsRepository>();
+
+			// Add all dependencies for Asp.Net Core Identity in MVC - these dependencies are injected into generic Controllers
+			// Including settings for MVC and Localization
+			// If you want to change primary keys or use another db model for Asp.Net Core Identity:
+			services.AddMvcWithLocalization<ApplicationUser<string>, string>(Configuration);
 
             // Add authorization policies for MVC
             RegisterAuthorization(services);

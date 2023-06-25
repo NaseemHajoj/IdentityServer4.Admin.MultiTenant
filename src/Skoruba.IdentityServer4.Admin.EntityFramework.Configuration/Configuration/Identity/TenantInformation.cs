@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Skoruba.IdentityServer4.Admin.EntityFramework.Configuration.Configuration.Identity
 {
-    public class Tenant
+    public class TenantInformation
     {
         public Guid Id { get; set; }
 

@@ -51,16 +51,6 @@ namespace Skoruba.IdentityServer4.Admin.BusinessLogic.Identity.Services.Interfac
 
         Task<TUserDto> GetUserAsync(string userId);
 
-        Task<TenantsDto> GetTenantsAsync(string search, int page = 1, int pageSize = 10);
-
-        Task<TenantDto> GetTenantAsync(Guid tenantId);
-
-        Task<(IdentityResult identityResult, Guid tenantId)> CreateTenantAsync(TenantDto tenant);
-
-        Task<(IdentityResult identityResult, Guid tenantId)> UpdateTenantAsync(TenantDto tenant);
-
-        Task<IdentityResult> DeleteTenantAsync(TenantDto tenant);
-
         Task<(IdentityResult identityResult, string userId)> CreateUserAsync(TUserDto user);
 
         Task<(IdentityResult identityResult, string userId)> UpdateUserAsync(TUserDto user);

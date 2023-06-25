@@ -3,8 +3,10 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 
+using IdentityServer4.AspNetIdentity;
 using IdentityServer4.Configuration;
 using IdentityServer4.EntityFramework.Storage;
+using IdentityServer4.Services;
 
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Builder;
@@ -37,6 +39,7 @@ using Skoruba.IdentityServer4.STS.Identity.Configuration.ApplicationParts;
 using Skoruba.IdentityServer4.STS.Identity.Configuration.Constants;
 using Skoruba.IdentityServer4.STS.Identity.Configuration.Interfaces;
 using Skoruba.IdentityServer4.STS.Identity.Helpers.Localization;
+using Skoruba.IdentityServer4.STS.Identity.Services;
 
 namespace Skoruba.IdentityServer4.STS.Identity.Helpers
 {
@@ -286,7 +289,7 @@ namespace Skoruba.IdentityServer4.STS.Identity.Helpers
                 .AddScoped<UserResolver<TUserIdentity>>()
                 .AddIdentity<TUserIdentity, TUserIdentityRole>(options => configuration.GetSection(nameof(IdentityOptions)).Bind(options))
                 .AddEntityFrameworkStores<TIdentityDbContext>()
-                .AddUserStore<ApplicationUserStore<TUserIdentity>>()
+				.AddUserStore<ApplicationUserStore<TUserIdentity>>()
                 .AddUserManager<ApplicationUserManager<TUserIdentity>>()
                 .AddDefaultTokenProviders();
 
@@ -360,14 +363,16 @@ namespace Skoruba.IdentityServer4.STS.Identity.Helpers
             IConfiguration configuration)
             where TPersistedGrantDbContext : DbContext, IAdminPersistedGrantDbContext
             where TConfigurationDbContext : DbContext, IAdminConfigurationDbContext
-            where TUserIdentity : class
+            where TUserIdentity : ApplicationUser<string>, new()
         {
             var configurationSection = configuration.GetSection(nameof(IdentityServerOptions));
 
             var builder = services.AddIdentityServer(options => configurationSection.Bind(options))
                 .AddConfigurationStore<TConfigurationDbContext>()
                 .AddOperationalStore<TPersistedGrantDbContext>()
-                .AddAspNetIdentity<TUserIdentity>();
+                .AddAspNetIdentity<TUserIdentity>()
+                .AddProfileService<MyProfileService<TUserIdentity>>()
+                .AddResourceOwnerValidator<MyResourceOwnerPasswordValidator<TUserIdentity>>();
 
             builder.AddCustomSigningCredential(configuration);
             builder.AddCustomValidationKey(configuration);
