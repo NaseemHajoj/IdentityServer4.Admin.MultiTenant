@@ -12,13 +12,14 @@ using Skoruba.IdentityServer4.Admin.EntityFramework.Shared.DbContexts;
 namespace Skoruba.IdentityServer4.Admin.EntityFramework.SqlServer.Migrations.Logging
 {
     [DbContext(typeof(AdminLogDbContext))]
-    [Migration("20230625145642_DbInit")]
+    [Migration("20230625152859_DbInit")]
     partial class DbInit
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
+                .HasDefaultSchema("idp")
                 .HasAnnotation("ProductVersion", "6.0.1")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
@@ -56,7 +57,7 @@ namespace Skoruba.IdentityServer4.Admin.EntityFramework.SqlServer.Migrations.Log
 
                     b.HasKey("Id");
 
-                    b.ToTable("IdentityLog", (string)null);
+                    b.ToTable("IdentityLog", "idp");
                 });
 #pragma warning restore 612, 618
         }

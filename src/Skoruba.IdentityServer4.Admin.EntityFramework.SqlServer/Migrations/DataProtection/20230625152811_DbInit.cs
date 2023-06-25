@@ -8,8 +8,12 @@ namespace Skoruba.IdentityServer4.Admin.EntityFramework.SqlServer.Migrations.Dat
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.EnsureSchema(
+                name: "idp");
+
             migrationBuilder.CreateTable(
                 name: "DataProtectionKeys",
+                schema: "idp",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
@@ -26,7 +30,8 @@ namespace Skoruba.IdentityServer4.Admin.EntityFramework.SqlServer.Migrations.Dat
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "DataProtectionKeys");
+                name: "DataProtectionKeys",
+                schema: "idp");
         }
     }
 }

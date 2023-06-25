@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 
 using Skoruba.AuditLogging.EntityFramework.DbContexts;
 using Skoruba.AuditLogging.EntityFramework.Entities;
+using Skoruba.IdentityServer4.Admin.EntityFramework.Shared.Constants;
 
 namespace Skoruba.IdentityServer4.Admin.EntityFramework.Shared.DbContexts
 {
@@ -20,5 +21,13 @@ namespace Skoruba.IdentityServer4.Admin.EntityFramework.Shared.DbContexts
         }
 
         public DbSet<AuditLog> AuditLog { get; set; }
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            // Configure default schema
+            modelBuilder.HasDefaultSchema(DatabaseConstants.IdentityServerConfigurationDbSchema);
+
+            base.OnModelCreating(modelBuilder);
+        }
     }
 }

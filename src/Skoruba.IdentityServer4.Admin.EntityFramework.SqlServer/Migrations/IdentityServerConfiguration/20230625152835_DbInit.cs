@@ -9,8 +9,12 @@ namespace Skoruba.IdentityServer4.Admin.EntityFramework.SqlServer.Migrations.Ide
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.EnsureSchema(
+                name: "idp");
+
             migrationBuilder.CreateTable(
                 name: "ApiResources",
+                schema: "idp",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
@@ -33,6 +37,7 @@ namespace Skoruba.IdentityServer4.Admin.EntityFramework.SqlServer.Migrations.Ide
 
             migrationBuilder.CreateTable(
                 name: "ApiScopes",
+                schema: "idp",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
@@ -52,6 +57,7 @@ namespace Skoruba.IdentityServer4.Admin.EntityFramework.SqlServer.Migrations.Ide
 
             migrationBuilder.CreateTable(
                 name: "Clients",
+                schema: "idp",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
@@ -107,6 +113,7 @@ namespace Skoruba.IdentityServer4.Admin.EntityFramework.SqlServer.Migrations.Ide
 
             migrationBuilder.CreateTable(
                 name: "IdentityResources",
+                schema: "idp",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
@@ -129,6 +136,7 @@ namespace Skoruba.IdentityServer4.Admin.EntityFramework.SqlServer.Migrations.Ide
 
             migrationBuilder.CreateTable(
                 name: "ApiResourceClaims",
+                schema: "idp",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
@@ -142,6 +150,7 @@ namespace Skoruba.IdentityServer4.Admin.EntityFramework.SqlServer.Migrations.Ide
                     table.ForeignKey(
                         name: "FK_ApiResourceClaims_ApiResources_ApiResourceId",
                         column: x => x.ApiResourceId,
+                        principalSchema: "idp",
                         principalTable: "ApiResources",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
@@ -149,6 +158,7 @@ namespace Skoruba.IdentityServer4.Admin.EntityFramework.SqlServer.Migrations.Ide
 
             migrationBuilder.CreateTable(
                 name: "ApiResourceProperties",
+                schema: "idp",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
@@ -163,6 +173,7 @@ namespace Skoruba.IdentityServer4.Admin.EntityFramework.SqlServer.Migrations.Ide
                     table.ForeignKey(
                         name: "FK_ApiResourceProperties_ApiResources_ApiResourceId",
                         column: x => x.ApiResourceId,
+                        principalSchema: "idp",
                         principalTable: "ApiResources",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
@@ -170,6 +181,7 @@ namespace Skoruba.IdentityServer4.Admin.EntityFramework.SqlServer.Migrations.Ide
 
             migrationBuilder.CreateTable(
                 name: "ApiResourceScopes",
+                schema: "idp",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
@@ -183,6 +195,7 @@ namespace Skoruba.IdentityServer4.Admin.EntityFramework.SqlServer.Migrations.Ide
                     table.ForeignKey(
                         name: "FK_ApiResourceScopes_ApiResources_ApiResourceId",
                         column: x => x.ApiResourceId,
+                        principalSchema: "idp",
                         principalTable: "ApiResources",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
@@ -190,6 +203,7 @@ namespace Skoruba.IdentityServer4.Admin.EntityFramework.SqlServer.Migrations.Ide
 
             migrationBuilder.CreateTable(
                 name: "ApiResourceSecrets",
+                schema: "idp",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
@@ -207,6 +221,7 @@ namespace Skoruba.IdentityServer4.Admin.EntityFramework.SqlServer.Migrations.Ide
                     table.ForeignKey(
                         name: "FK_ApiResourceSecrets_ApiResources_ApiResourceId",
                         column: x => x.ApiResourceId,
+                        principalSchema: "idp",
                         principalTable: "ApiResources",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
@@ -214,6 +229,7 @@ namespace Skoruba.IdentityServer4.Admin.EntityFramework.SqlServer.Migrations.Ide
 
             migrationBuilder.CreateTable(
                 name: "ApiScopeClaims",
+                schema: "idp",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
@@ -227,6 +243,7 @@ namespace Skoruba.IdentityServer4.Admin.EntityFramework.SqlServer.Migrations.Ide
                     table.ForeignKey(
                         name: "FK_ApiScopeClaims_ApiScopes_ScopeId",
                         column: x => x.ScopeId,
+                        principalSchema: "idp",
                         principalTable: "ApiScopes",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
@@ -234,6 +251,7 @@ namespace Skoruba.IdentityServer4.Admin.EntityFramework.SqlServer.Migrations.Ide
 
             migrationBuilder.CreateTable(
                 name: "ApiScopeProperties",
+                schema: "idp",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
@@ -248,6 +266,7 @@ namespace Skoruba.IdentityServer4.Admin.EntityFramework.SqlServer.Migrations.Ide
                     table.ForeignKey(
                         name: "FK_ApiScopeProperties_ApiScopes_ScopeId",
                         column: x => x.ScopeId,
+                        principalSchema: "idp",
                         principalTable: "ApiScopes",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
@@ -255,6 +274,7 @@ namespace Skoruba.IdentityServer4.Admin.EntityFramework.SqlServer.Migrations.Ide
 
             migrationBuilder.CreateTable(
                 name: "ClientClaims",
+                schema: "idp",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
@@ -269,6 +289,7 @@ namespace Skoruba.IdentityServer4.Admin.EntityFramework.SqlServer.Migrations.Ide
                     table.ForeignKey(
                         name: "FK_ClientClaims_Clients_ClientId",
                         column: x => x.ClientId,
+                        principalSchema: "idp",
                         principalTable: "Clients",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
@@ -276,6 +297,7 @@ namespace Skoruba.IdentityServer4.Admin.EntityFramework.SqlServer.Migrations.Ide
 
             migrationBuilder.CreateTable(
                 name: "ClientCorsOrigins",
+                schema: "idp",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
@@ -289,6 +311,7 @@ namespace Skoruba.IdentityServer4.Admin.EntityFramework.SqlServer.Migrations.Ide
                     table.ForeignKey(
                         name: "FK_ClientCorsOrigins_Clients_ClientId",
                         column: x => x.ClientId,
+                        principalSchema: "idp",
                         principalTable: "Clients",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
@@ -296,6 +319,7 @@ namespace Skoruba.IdentityServer4.Admin.EntityFramework.SqlServer.Migrations.Ide
 
             migrationBuilder.CreateTable(
                 name: "ClientGrantTypes",
+                schema: "idp",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
@@ -309,6 +333,7 @@ namespace Skoruba.IdentityServer4.Admin.EntityFramework.SqlServer.Migrations.Ide
                     table.ForeignKey(
                         name: "FK_ClientGrantTypes_Clients_ClientId",
                         column: x => x.ClientId,
+                        principalSchema: "idp",
                         principalTable: "Clients",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
@@ -316,6 +341,7 @@ namespace Skoruba.IdentityServer4.Admin.EntityFramework.SqlServer.Migrations.Ide
 
             migrationBuilder.CreateTable(
                 name: "ClientIdPRestrictions",
+                schema: "idp",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
@@ -329,6 +355,7 @@ namespace Skoruba.IdentityServer4.Admin.EntityFramework.SqlServer.Migrations.Ide
                     table.ForeignKey(
                         name: "FK_ClientIdPRestrictions_Clients_ClientId",
                         column: x => x.ClientId,
+                        principalSchema: "idp",
                         principalTable: "Clients",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
@@ -336,6 +363,7 @@ namespace Skoruba.IdentityServer4.Admin.EntityFramework.SqlServer.Migrations.Ide
 
             migrationBuilder.CreateTable(
                 name: "ClientPostLogoutRedirectUris",
+                schema: "idp",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
@@ -349,6 +377,7 @@ namespace Skoruba.IdentityServer4.Admin.EntityFramework.SqlServer.Migrations.Ide
                     table.ForeignKey(
                         name: "FK_ClientPostLogoutRedirectUris_Clients_ClientId",
                         column: x => x.ClientId,
+                        principalSchema: "idp",
                         principalTable: "Clients",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
@@ -356,6 +385,7 @@ namespace Skoruba.IdentityServer4.Admin.EntityFramework.SqlServer.Migrations.Ide
 
             migrationBuilder.CreateTable(
                 name: "ClientProperties",
+                schema: "idp",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
@@ -370,6 +400,7 @@ namespace Skoruba.IdentityServer4.Admin.EntityFramework.SqlServer.Migrations.Ide
                     table.ForeignKey(
                         name: "FK_ClientProperties_Clients_ClientId",
                         column: x => x.ClientId,
+                        principalSchema: "idp",
                         principalTable: "Clients",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
@@ -377,6 +408,7 @@ namespace Skoruba.IdentityServer4.Admin.EntityFramework.SqlServer.Migrations.Ide
 
             migrationBuilder.CreateTable(
                 name: "ClientRedirectUris",
+                schema: "idp",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
@@ -390,6 +422,7 @@ namespace Skoruba.IdentityServer4.Admin.EntityFramework.SqlServer.Migrations.Ide
                     table.ForeignKey(
                         name: "FK_ClientRedirectUris_Clients_ClientId",
                         column: x => x.ClientId,
+                        principalSchema: "idp",
                         principalTable: "Clients",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
@@ -397,6 +430,7 @@ namespace Skoruba.IdentityServer4.Admin.EntityFramework.SqlServer.Migrations.Ide
 
             migrationBuilder.CreateTable(
                 name: "ClientScopes",
+                schema: "idp",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
@@ -410,6 +444,7 @@ namespace Skoruba.IdentityServer4.Admin.EntityFramework.SqlServer.Migrations.Ide
                     table.ForeignKey(
                         name: "FK_ClientScopes_Clients_ClientId",
                         column: x => x.ClientId,
+                        principalSchema: "idp",
                         principalTable: "Clients",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
@@ -417,6 +452,7 @@ namespace Skoruba.IdentityServer4.Admin.EntityFramework.SqlServer.Migrations.Ide
 
             migrationBuilder.CreateTable(
                 name: "ClientSecrets",
+                schema: "idp",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
@@ -434,6 +470,7 @@ namespace Skoruba.IdentityServer4.Admin.EntityFramework.SqlServer.Migrations.Ide
                     table.ForeignKey(
                         name: "FK_ClientSecrets_Clients_ClientId",
                         column: x => x.ClientId,
+                        principalSchema: "idp",
                         principalTable: "Clients",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
@@ -441,6 +478,7 @@ namespace Skoruba.IdentityServer4.Admin.EntityFramework.SqlServer.Migrations.Ide
 
             migrationBuilder.CreateTable(
                 name: "IdentityResourceClaims",
+                schema: "idp",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
@@ -454,6 +492,7 @@ namespace Skoruba.IdentityServer4.Admin.EntityFramework.SqlServer.Migrations.Ide
                     table.ForeignKey(
                         name: "FK_IdentityResourceClaims_IdentityResources_IdentityResourceId",
                         column: x => x.IdentityResourceId,
+                        principalSchema: "idp",
                         principalTable: "IdentityResources",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
@@ -461,6 +500,7 @@ namespace Skoruba.IdentityServer4.Admin.EntityFramework.SqlServer.Migrations.Ide
 
             migrationBuilder.CreateTable(
                 name: "IdentityResourceProperties",
+                schema: "idp",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
@@ -475,6 +515,7 @@ namespace Skoruba.IdentityServer4.Admin.EntityFramework.SqlServer.Migrations.Ide
                     table.ForeignKey(
                         name: "FK_IdentityResourceProperties_IdentityResources_IdentityResourceId",
                         column: x => x.IdentityResourceId,
+                        principalSchema: "idp",
                         principalTable: "IdentityResources",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
@@ -482,109 +523,130 @@ namespace Skoruba.IdentityServer4.Admin.EntityFramework.SqlServer.Migrations.Ide
 
             migrationBuilder.CreateIndex(
                 name: "IX_ApiResourceClaims_ApiResourceId",
+                schema: "idp",
                 table: "ApiResourceClaims",
                 column: "ApiResourceId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_ApiResourceProperties_ApiResourceId",
+                schema: "idp",
                 table: "ApiResourceProperties",
                 column: "ApiResourceId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_ApiResources_Name",
+                schema: "idp",
                 table: "ApiResources",
                 column: "Name",
                 unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_ApiResourceScopes_ApiResourceId",
+                schema: "idp",
                 table: "ApiResourceScopes",
                 column: "ApiResourceId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_ApiResourceSecrets_ApiResourceId",
+                schema: "idp",
                 table: "ApiResourceSecrets",
                 column: "ApiResourceId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_ApiScopeClaims_ScopeId",
+                schema: "idp",
                 table: "ApiScopeClaims",
                 column: "ScopeId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_ApiScopeProperties_ScopeId",
+                schema: "idp",
                 table: "ApiScopeProperties",
                 column: "ScopeId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_ApiScopes_Name",
+                schema: "idp",
                 table: "ApiScopes",
                 column: "Name",
                 unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_ClientClaims_ClientId",
+                schema: "idp",
                 table: "ClientClaims",
                 column: "ClientId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_ClientCorsOrigins_ClientId",
+                schema: "idp",
                 table: "ClientCorsOrigins",
                 column: "ClientId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_ClientGrantTypes_ClientId",
+                schema: "idp",
                 table: "ClientGrantTypes",
                 column: "ClientId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_ClientIdPRestrictions_ClientId",
+                schema: "idp",
                 table: "ClientIdPRestrictions",
                 column: "ClientId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_ClientPostLogoutRedirectUris_ClientId",
+                schema: "idp",
                 table: "ClientPostLogoutRedirectUris",
                 column: "ClientId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_ClientProperties_ClientId",
+                schema: "idp",
                 table: "ClientProperties",
                 column: "ClientId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_ClientRedirectUris_ClientId",
+                schema: "idp",
                 table: "ClientRedirectUris",
                 column: "ClientId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Clients_ClientId",
+                schema: "idp",
                 table: "Clients",
                 column: "ClientId",
                 unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_ClientScopes_ClientId",
+                schema: "idp",
                 table: "ClientScopes",
                 column: "ClientId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_ClientSecrets_ClientId",
+                schema: "idp",
                 table: "ClientSecrets",
                 column: "ClientId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_IdentityResourceClaims_IdentityResourceId",
+                schema: "idp",
                 table: "IdentityResourceClaims",
                 column: "IdentityResourceId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_IdentityResourceProperties_IdentityResourceId",
+                schema: "idp",
                 table: "IdentityResourceProperties",
                 column: "IdentityResourceId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_IdentityResources_Name",
+                schema: "idp",
                 table: "IdentityResources",
                 column: "Name",
                 unique: true);
@@ -593,67 +655,88 @@ namespace Skoruba.IdentityServer4.Admin.EntityFramework.SqlServer.Migrations.Ide
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "ApiResourceClaims");
+                name: "ApiResourceClaims",
+                schema: "idp");
 
             migrationBuilder.DropTable(
-                name: "ApiResourceProperties");
+                name: "ApiResourceProperties",
+                schema: "idp");
 
             migrationBuilder.DropTable(
-                name: "ApiResourceScopes");
+                name: "ApiResourceScopes",
+                schema: "idp");
 
             migrationBuilder.DropTable(
-                name: "ApiResourceSecrets");
+                name: "ApiResourceSecrets",
+                schema: "idp");
 
             migrationBuilder.DropTable(
-                name: "ApiScopeClaims");
+                name: "ApiScopeClaims",
+                schema: "idp");
 
             migrationBuilder.DropTable(
-                name: "ApiScopeProperties");
+                name: "ApiScopeProperties",
+                schema: "idp");
 
             migrationBuilder.DropTable(
-                name: "ClientClaims");
+                name: "ClientClaims",
+                schema: "idp");
 
             migrationBuilder.DropTable(
-                name: "ClientCorsOrigins");
+                name: "ClientCorsOrigins",
+                schema: "idp");
 
             migrationBuilder.DropTable(
-                name: "ClientGrantTypes");
+                name: "ClientGrantTypes",
+                schema: "idp");
 
             migrationBuilder.DropTable(
-                name: "ClientIdPRestrictions");
+                name: "ClientIdPRestrictions",
+                schema: "idp");
 
             migrationBuilder.DropTable(
-                name: "ClientPostLogoutRedirectUris");
+                name: "ClientPostLogoutRedirectUris",
+                schema: "idp");
 
             migrationBuilder.DropTable(
-                name: "ClientProperties");
+                name: "ClientProperties",
+                schema: "idp");
 
             migrationBuilder.DropTable(
-                name: "ClientRedirectUris");
+                name: "ClientRedirectUris",
+                schema: "idp");
 
             migrationBuilder.DropTable(
-                name: "ClientScopes");
+                name: "ClientScopes",
+                schema: "idp");
 
             migrationBuilder.DropTable(
-                name: "ClientSecrets");
+                name: "ClientSecrets",
+                schema: "idp");
 
             migrationBuilder.DropTable(
-                name: "IdentityResourceClaims");
+                name: "IdentityResourceClaims",
+                schema: "idp");
 
             migrationBuilder.DropTable(
-                name: "IdentityResourceProperties");
+                name: "IdentityResourceProperties",
+                schema: "idp");
 
             migrationBuilder.DropTable(
-                name: "ApiResources");
+                name: "ApiResources",
+                schema: "idp");
 
             migrationBuilder.DropTable(
-                name: "ApiScopes");
+                name: "ApiScopes",
+                schema: "idp");
 
             migrationBuilder.DropTable(
-                name: "Clients");
+                name: "Clients",
+                schema: "idp");
 
             migrationBuilder.DropTable(
-                name: "IdentityResources");
+                name: "IdentityResources",
+                schema: "idp");
         }
     }
 }

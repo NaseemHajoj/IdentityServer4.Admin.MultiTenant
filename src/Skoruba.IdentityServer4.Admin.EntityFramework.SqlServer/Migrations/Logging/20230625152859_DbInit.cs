@@ -9,8 +9,12 @@ namespace Skoruba.IdentityServer4.Admin.EntityFramework.SqlServer.Migrations.Log
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.EnsureSchema(
+                name: "idp");
+
             migrationBuilder.CreateTable(
                 name: "IdentityLog",
+                schema: "idp",
                 columns: table => new
                 {
                     Id = table.Column<long>(type: "bigint", nullable: false)
@@ -32,7 +36,8 @@ namespace Skoruba.IdentityServer4.Admin.EntityFramework.SqlServer.Migrations.Log
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "IdentityLog");
+                name: "IdentityLog",
+                schema: "idp");
         }
     }
 }

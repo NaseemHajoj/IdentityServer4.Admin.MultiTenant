@@ -17,6 +17,7 @@ namespace Skoruba.IdentityServer4.Admin.EntityFramework.SqlServer.Migrations.Aud
         {
 #pragma warning disable 612, 618
             modelBuilder
+                .HasDefaultSchema("idp")
                 .HasAnnotation("ProductVersion", "6.0.1")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
@@ -62,7 +63,7 @@ namespace Skoruba.IdentityServer4.Admin.EntityFramework.SqlServer.Migrations.Aud
 
                     b.HasKey("Id");
 
-                    b.ToTable("AuditLog");
+                    b.ToTable("AuditLog", "idp");
                 });
 #pragma warning restore 612, 618
         }

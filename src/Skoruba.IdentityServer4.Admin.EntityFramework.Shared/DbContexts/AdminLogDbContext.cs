@@ -17,6 +17,9 @@ namespace Skoruba.IdentityServer4.Admin.EntityFramework.Shared.DbContexts
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
+            // Configure default schema
+            builder.HasDefaultSchema(DatabaseConstants.IdentityServerConfigurationDbSchema);
+
             base.OnModelCreating(builder);
 
             ConfigureLogContext(builder);

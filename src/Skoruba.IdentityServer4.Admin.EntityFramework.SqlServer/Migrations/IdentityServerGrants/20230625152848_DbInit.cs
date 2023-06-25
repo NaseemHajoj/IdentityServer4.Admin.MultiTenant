@@ -9,8 +9,12 @@ namespace Skoruba.IdentityServer4.Admin.EntityFramework.SqlServer.Migrations.Ide
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.EnsureSchema(
+                name: "idp");
+
             migrationBuilder.CreateTable(
                 name: "DeviceCodes",
+                schema: "idp",
                 columns: table => new
                 {
                     UserCode = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
@@ -30,6 +34,7 @@ namespace Skoruba.IdentityServer4.Admin.EntityFramework.SqlServer.Migrations.Ide
 
             migrationBuilder.CreateTable(
                 name: "PersistedGrants",
+                schema: "idp",
                 columns: table => new
                 {
                     Key = table.Column<string>(type: "nvarchar(200)", maxLength: 200, nullable: false),
@@ -50,27 +55,32 @@ namespace Skoruba.IdentityServer4.Admin.EntityFramework.SqlServer.Migrations.Ide
 
             migrationBuilder.CreateIndex(
                 name: "IX_DeviceCodes_DeviceCode",
+                schema: "idp",
                 table: "DeviceCodes",
                 column: "DeviceCode",
                 unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_DeviceCodes_Expiration",
+                schema: "idp",
                 table: "DeviceCodes",
                 column: "Expiration");
 
             migrationBuilder.CreateIndex(
                 name: "IX_PersistedGrants_Expiration",
+                schema: "idp",
                 table: "PersistedGrants",
                 column: "Expiration");
 
             migrationBuilder.CreateIndex(
                 name: "IX_PersistedGrants_SubjectId_ClientId_Type",
+                schema: "idp",
                 table: "PersistedGrants",
                 columns: new[] { "SubjectId", "ClientId", "Type" });
 
             migrationBuilder.CreateIndex(
                 name: "IX_PersistedGrants_SubjectId_SessionId_Type",
+                schema: "idp",
                 table: "PersistedGrants",
                 columns: new[] { "SubjectId", "SessionId", "Type" });
         }
@@ -78,10 +88,12 @@ namespace Skoruba.IdentityServer4.Admin.EntityFramework.SqlServer.Migrations.Ide
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "DeviceCodes");
+                name: "DeviceCodes",
+                schema: "idp");
 
             migrationBuilder.DropTable(
-                name: "PersistedGrants");
+                name: "PersistedGrants",
+                schema: "idp");
         }
     }
 }

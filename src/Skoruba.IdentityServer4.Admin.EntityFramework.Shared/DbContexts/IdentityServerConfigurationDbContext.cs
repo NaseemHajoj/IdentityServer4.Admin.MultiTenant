@@ -3,6 +3,7 @@ using IdentityServer4.EntityFramework.Entities;
 using IdentityServer4.EntityFramework.Options;
 using Microsoft.EntityFrameworkCore;
 
+using Skoruba.IdentityServer4.Admin.EntityFramework.Shared.Constants;
 using Skoruba.IdentityServer4.Admin.EntityFramework.Shared.Interfaces;
 
 namespace Skoruba.IdentityServer4.Admin.EntityFramework.Shared.DbContexts
@@ -45,5 +46,13 @@ namespace Skoruba.IdentityServer4.Admin.EntityFramework.Shared.DbContexts
         public DbSet<ApiScopeProperty> ApiScopeProperties { get; set; }
 
         public DbSet<ApiResourceScope> ApiResourceScopes { get; set; }
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            // Configure default schema
+            modelBuilder.HasDefaultSchema(DatabaseConstants.IdentityServerConfigurationDbSchema);
+
+            base.OnModelCreating(modelBuilder);
+        }
     }
 }
