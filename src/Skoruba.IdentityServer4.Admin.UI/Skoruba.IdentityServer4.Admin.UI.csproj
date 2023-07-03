@@ -11,6 +11,7 @@
     <Content Remove="Areas\AdminUI\Views\Identity\TenantDelete.cshtml" />
     <Content Remove="Areas\AdminUI\Views\Identity\TenantProfile.cshtml" />
     <Content Remove="Areas\AdminUI\Views\Identity\Tenant\Section\Label.cshtml" />
+    <Content Remove="Areas\AdminUI\Views\TenantProfile.cshtml" />
   </ItemGroup>
 
   <ItemGroup>
@@ -94,6 +95,7 @@
     <None Include="Areas\AdminUI\Views\Shared\Components\IdentityServerLink\Default.cshtml" />
     <None Include="Areas\AdminUI\Views\Shared\Error.cshtml" />
     <None Include="Areas\AdminUI\Views\Shared\_Layout.cshtml" />
+    <None Include="Areas\AdminUI\Views\Tenants\CreateNewTenant.cshtml" />
     <None Include="Areas\AdminUI\Views\_ViewImports.cshtml" />
     <None Include="Areas\AdminUI\Views\_ViewStart.cshtml" />
   </ItemGroup>

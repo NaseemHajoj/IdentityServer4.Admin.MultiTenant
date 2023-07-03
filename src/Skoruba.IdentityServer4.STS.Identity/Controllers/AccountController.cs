@@ -333,7 +333,7 @@ namespace Skoruba.IdentityServer4.STS.Identity.Controllers
 
         [HttpGet]
         [AllowAnonymous]
-        public async Task<IActionResult> ResetPassword(string userId, string code = null)
+        public IActionResult ResetPassword(string userId, string code = null)
         {
             this.ViewBag.UserId = userId;
 

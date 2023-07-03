@@ -2,11 +2,13 @@
 using System.Data;
 using System.Linq;
 using System.Text;
+using System.Text.Encodings.Web;
 using System.Threading;
 using System.Threading.Tasks;
 using AutoMapper;
 
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.Extensions.Logging;
 
 using Skoruba.AuditLogging.Services;
@@ -36,13 +38,16 @@ namespace Skoruba.IdentityServer4.Admin.BusinessLogic.Services
 
 		private readonly ILogger<TenantsManager<TUser>> logger;
 
+        private readonly IEmailSender emailSender;
+
 		public TenantsManager(
 			ITenantsRepository tenantsRepository,
 			ApplicationUserManager<TUser> applicationUserManager,
 			IMapper mapper,
 			IAuditEventLogger auditEventLogger,
             IPasswordGenerator passwordGenerator,
-			ILogger<TenantsManager<TUser>> logger) 
+			ILogger<TenantsManager<TUser>> logger,
+            IEmailSender emailSender) 
 		{
 			this.tenantsRepository = tenantsRepository;
 			this.applicationUserManager = applicationUserManager;
@@ -50,6 +55,7 @@ namespace Skoruba.IdentityServer4.Admin.BusinessLogic.Services
 			this.auditEventLogger = auditEventLogger;
             this.passwordGenerator = passwordGenerator;
 			this.logger = logger;
+            this.emailSender = emailSender;
 		}
 
 		public async Task<TenantDto> CreateNewTenantAsync(TenantDto tenantDto, CancellationToken cancellationToken = default)
@@ -58,7 +64,7 @@ namespace Skoruba.IdentityServer4.Admin.BusinessLogic.Services
 
             tenant = await this.tenantsRepository.CreateTenantAsync(tenant, cancellationToken);
 
-			this.logger.LogDebug("New tenant was created with Id \"{TenantId\" and Name \"{TenantName}\"", tenant.Id, tenant.Name);
+			this.logger.LogDebug("New tenant was created with Id \"{TenantId}\" and Name \"{TenantName}\"", tenant.Id, tenant.Name);
 
 			// get the newly created tenant dto
             TenantDto newlyCreatedTenant = this.mapper.Map<TenantDto>(tenant);
@@ -66,17 +72,30 @@ namespace Skoruba.IdentityServer4.Admin.BusinessLogic.Services
             var adminUser = new TUser
             {
                 Id = Guid.NewGuid().ToString(),
-                UserName = "admin",
-                FirstName = "Ahmad",
-                LastName = "Khaldi",
+                UserName = "Admin",
+                FirstName = "Admin",
+                LastName = "",
                 Email = tenant.Email,
                 EmailConfirmed = false,
                 TenantId = tenant.Id
             };
 
-            this.applicationUserManager.CreateAsync(adminUser);
+            string password = this.passwordGenerator.GeneratePassword();
+            var identityResult = await this.applicationUserManager.CreateAsync(adminUser, password);
+            if (identityResult.Succeeded)
+            {
+                var user = await this.applicationUserManager.FindByIdAsync(adminUser.Id);
 
-            await this.auditEventLogger.LogEventAsync(new TenantCreatedEvent<TenantDto>(newlyCreatedTenant));
+                string body = $"New tenant was created for you with name {tenant.Name} and Id {tenant.Id} \r\n"
+                    + $"Admin: {adminUser.UserName} \r\n"
+                    + $"Email: {adminUser.Email}      (Email needs to be confirmed)\r\n"
+                    + $"Initial Admin Password: {password} (you will be requested to change this initial password once you log in) \r\n"
+                    + "Thanks,\r\n"
+                    + "Advanced Packages Tracker System";
+                await emailSender.SendEmailAsync(user.Email, "New Tenant Created", body);
+
+                await this.auditEventLogger.LogEventAsync(new TenantCreatedEvent<TenantDto>(newlyCreatedTenant));
+            }
 
             return newlyCreatedTenant;
 		}
