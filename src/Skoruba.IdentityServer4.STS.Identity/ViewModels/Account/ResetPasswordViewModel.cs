@@ -5,6 +5,9 @@ namespace Skoruba.IdentityServer4.STS.Identity.ViewModels.Account
     public class ResetPasswordViewModel
     {
         [Required]
+        public string UserId { get; set; }
+
+        [Required]
         [EmailAddress]
         public string Email { get; set; }
 

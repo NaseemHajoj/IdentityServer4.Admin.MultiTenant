@@ -12,5 +12,8 @@ namespace Skoruba.IdentityServer4.STS.Identity.ViewModels.Account
         public string Email { get; set; }
 
         public string Username { get; set; }
+
+        [Required]
+        public string TenantName { get; set; }
     }
 }

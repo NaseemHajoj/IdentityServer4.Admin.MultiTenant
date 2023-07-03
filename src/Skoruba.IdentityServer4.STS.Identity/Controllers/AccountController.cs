@@ -291,7 +291,7 @@ namespace Skoruba.IdentityServer4.STS.Identity.Controllers
                     case LoginResolutionPolicy.Email:
                         try
                         {
-                            user = await _userManager.FindByEmailAsync(model.Email);
+                            user = await _userManager.FindByEmailAsync(model.Email, model.TenantName);
                         }
                         catch (Exception ex)
                         {
@@ -303,7 +303,7 @@ namespace Skoruba.IdentityServer4.STS.Identity.Controllers
                     case LoginResolutionPolicy.Username:
                         try
                         {
-                            user = await _userManager.FindByNameAsync(model.Username);
+                            user = await _userManager.FindByNameAsync(model.Username, model.TenantName);
                         }
                         catch (Exception ex)
                         {
@@ -333,8 +333,10 @@ namespace Skoruba.IdentityServer4.STS.Identity.Controllers
 
         [HttpGet]
         [AllowAnonymous]
-        public IActionResult ResetPassword(string code = null)
+        public async Task<IActionResult> ResetPassword(string userId, string code = null)
         {
+            this.ViewBag.UserId = userId;
+
             return code == null ? View("Error") : View();
         }
 
@@ -347,8 +349,9 @@ namespace Skoruba.IdentityServer4.STS.Identity.Controllers
             {
                 return View(model);
             }
-            var user = await _userManager.FindByEmailAsync(model.Email);
-            if (user == null)
+
+            var user = await this._userManager.FindByIdAsync(model.UserId);
+            if (user == null || user.NormalizedEmail != model.Email.ToUpper())
             {
                 // Don't reveal that the user does not exist
                 return RedirectToAction(nameof(ResetPasswordConfirmation), "Account");
@@ -361,6 +364,8 @@ namespace Skoruba.IdentityServer4.STS.Identity.Controllers
             {
                 return RedirectToAction(nameof(ResetPasswordConfirmation), "Account");
             }
+
+            this.ViewBag.UserId = model.UserId;
 
             AddErrors(result);
 
