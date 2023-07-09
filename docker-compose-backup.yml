@@ -26,14 +26,12 @@ services:
     container_name: skoruba-identityserver4-admin
     environment:
       - VIRTUAL_HOST=admin.skoruba.local
-      - SeedConfiguration__ApplySeed=false
-      - DatabaseMigrationsConfiguration__ApplyDatabaseMigrations=false
-      - 'ConnectionStrings__ConfigurationDbConnection=Server=host.docker.internal\SQLEXPRESS,53625;Database=Development;User Id=Apt-Admin-135;Password=${DB_PASSWORD:-Abcd123@!};MultipleActiveResultSets=true'
-      - 'ConnectionStrings__PersistedGrantDbConnection=Server=host.docker.internal\SQLEXPRESS,53625;Database=Development;User Id=Apt-Admin-135;Password=${DB_PASSWORD:-Abcd123@!};MultipleActiveResultSets=true'
-      - 'ConnectionStrings__IdentityDbConnection=Server=host.docker.internal\SQLEXPRESS,53625;Database=Development;User Id=Apt-Admin-135;Password=${DB_PASSWORD:-Abcd123@!};MultipleActiveResultSets=true'
-      - 'ConnectionStrings__AdminLogDbConnection=Server=host.docker.internal\SQLEXPRESS,53625;Database=Development;User Id=Apt-Admin-135;Password=${DB_PASSWORD:-Abcd123@!};MultipleActiveResultSets=true'
-      - 'ConnectionStrings__AdminAuditLogDbConnection=Server=host.docker.internal\SQLEXPRESS,53625;Database=Development;User Id=Apt-Admin-135;Password=${DB_PASSWORD:-Abcd123@!};MultipleActiveResultSets=true'
-      - 'ConnectionStrings__DataProtectionDbConnection=Server=host.docker.internal\SQLEXPRESS,53625;Database=Development;User Id=Apt-Admin-135;Password=${DB_PASSWORD:-Abcd123@!};MultipleActiveResultSets=true'
+      - 'ConnectionStrings__ConfigurationDbConnection=Server=db;Database=IdentityServer4Admin;User Id=sa;Password=${DB_PASSWORD:-Password_123};MultipleActiveResultSets=true'
+      - 'ConnectionStrings__PersistedGrantDbConnection=Server=db;Database=IdentityServer4Admin;User Id=sa;Password=${DB_PASSWORD:-Password_123};MultipleActiveResultSets=true'
+      - 'ConnectionStrings__IdentityDbConnection=Server=db;Database=IdentityServer4Admin;User Id=sa;Password=${DB_PASSWORD:-Password_123};MultipleActiveResultSets=true'
+      - 'ConnectionStrings__AdminLogDbConnection=Server=db;Database=IdentityServer4Admin;User Id=sa;Password=${DB_PASSWORD:-Password_123};MultipleActiveResultSets=true'
+      - 'ConnectionStrings__AdminAuditLogDbConnection=Server=db;Database=IdentityServer4Admin;User Id=sa;Password=${DB_PASSWORD:-Password_123};MultipleActiveResultSets=true'
+      - 'ConnectionStrings__DataProtectionDbConnection=Server=db;Database=IdentityServer4Admin;User Id=sa;Password=${DB_PASSWORD:-Password_123};MultipleActiveResultSets=true'
       - 'AdminConfiguration__IdentityAdminBaseUrl=https://admin.skoruba.local'
       - 'AdminConfiguration__IdentityAdminRedirectUri=https://admin.skoruba.local/signin-oidc'
       - 'AdminConfiguration__IdentityServerBaseUrl=https://sts.skoruba.local'
@@ -44,10 +42,12 @@ services:
       - 'IdentityServerData__Clients__0__PostLogoutRedirectUris__0=https://admin.skoruba.local/signout-callback-oidc'
       - 'IdentityServerData__Clients__0__AllowedCorsOrigins__0=https://admin.skoruba.local'
       - 'IdentityServerData__Clients__1__RedirectUris__0=https://admin-api.skoruba.local/swagger/oauth2-redirect.html'
-      - 'Serilog__WriteTo__1__Args__connectionString=Server=host.docker.internal\SQLEXPRESS,53625;Database=Development;User Id=Apt-Admin-135;Password=${DB_PASSWORD:-Abcd123@!};MultipleActiveResultSets=true'
+      - 'Serilog__WriteTo__1__Args__connectionString=Server=db;Database=IdentityServer4Admin;User Id=sa;Password=${DB_PASSWORD:-Password_123};MultipleActiveResultSets=true'
       - DockerConfiguration__UpdateCaCertificate=true
       - ASPNETCORE_ENVIRONMENT=Development
+    command: dotnet Skoruba.IdentityServer4.Admin.dll /seed
     depends_on:
+      - db
       - skoruba.identityserver4.sts.identity
     volumes:
       - './shared/serilog.json:/app/serilog.json'
@@ -67,12 +67,12 @@ services:
       - AdminApiConfiguration__RequireHttpsMetadata=false
       - 'AdminApiConfiguration__ApiBaseUrl=https://admin-api.skoruba.local'
       - 'AdminApiConfiguration__IdentityServerBaseUrl=https://sts.skoruba.local'
-      - 'ConnectionStrings__ConfigurationDbConnection=Server=host.docker.internal\SQLEXPRESS,53625;Database=Development;User Id=A;Password=${DB_PASSWORD:-Abcd123@!};MultipleActiveResultSets=true'
-      - 'ConnectionStrings__PersistedGrantDbConnection=Server=host.docker.internal\SQLEXPRESS,53625;Database=Development;User Id=Apt-Admin-135;Password=${DB_PASSWORD:-Abcd123@!};MultipleActiveResultSets=true'
-      - 'ConnectionStrings__IdentityDbConnection=Server=host.docker.internal\SQLEXPRESS,53625;Database=Development;User Id=Apt-Admin-135;Password=${DB_PASSWORD:-Abcd123@!};MultipleActiveResultSets=true'
-      - 'ConnectionStrings__AdminLogDbConnection=Server=host.docker.internal\SQLEXPRESS,53625;Database=Development;User Id=Apt-Admin-135;Password=${DB_PASSWORD:-Abcd123@!};MultipleActiveResultSets=true'
-      - 'ConnectionStrings__AdminAuditLogDbConnection=Server=host.docker.internal\SQLEXPRESS,53625;Database=Development;User Id=Apt-Admin-135;Password=${DB_PASSWORD:-Abcd123@!};MultipleActiveResultSets=true'
-      - 'ConnectionStrings__DataProtectionDbConnection=Server=host.docker.internal\SQLEXPRESS,53625;Database=Development;User Id=Apt-Admin-135;Password=${DB_PASSWORD:-Abcd123@!};MultipleActiveResultSets=true'
+      - 'ConnectionStrings__ConfigurationDbConnection=Server=db;Database=IdentityServer4Admin;User Id=sa;Password=${DB_PASSWORD:-Password_123};MultipleActiveResultSets=true'
+      - 'ConnectionStrings__PersistedGrantDbConnection=Server=db;Database=IdentityServer4Admin;User Id=sa;Password=${DB_PASSWORD:-Password_123};MultipleActiveResultSets=true'
+      - 'ConnectionStrings__IdentityDbConnection=Server=db;Database=IdentityServer4Admin;User Id=sa;Password=${DB_PASSWORD:-Password_123};MultipleActiveResultSets=true'
+      - 'ConnectionStrings__AdminLogDbConnection=Server=db;Database=IdentityServer4Admin;User Id=sa;Password=${DB_PASSWORD:-Password_123};MultipleActiveResultSets=true'
+      - 'ConnectionStrings__AdminAuditLogDbConnection=Server=db;Database=IdentityServer4Admin;User Id=sa;Password=${DB_PASSWORD:-Password_123};MultipleActiveResultSets=true'
+      - 'ConnectionStrings__DataProtectionDbConnection=Server=db;Database=IdentityServer4Admin;User Id=sa;Password=${DB_PASSWORD:-Password_123};MultipleActiveResultSets=true'
       - DockerConfiguration__UpdateCaCertificate=true
       - ASPNETCORE_ENVIRONMENT=Development
     volumes:
@@ -88,10 +88,10 @@ services:
     container_name: skoruba-identityserver4-sts-identity
     environment:
       - VIRTUAL_HOST=sts.skoruba.local
-      - 'ConnectionStrings__ConfigurationDbConnection=Server=host.docker.internal\SQLEXPRESS,53625;Database=Development;User Id=Apt-Admin-135;Password=${DB_PASSWORD:-Abcd123@!};MultipleActiveResultSets=true'
-      - 'ConnectionStrings__PersistedGrantDbConnection=Server=host.docker.internal\SQLEXPRESS,53625;Database=Development;User Id=Apt-Admin-135;Password=${DB_PASSWORD:-Abcd123@!};MultipleActiveResultSets=true'
-      - 'ConnectionStrings__IdentityDbConnection=Server=host.docker.internal\SQLEXPRESS,53625;Database=Development;User Id=Apt-Admin-135;Password=${DB_PASSWORD:-Abcd123@!};MultipleActiveResultSets=true'
-      - 'ConnectionStrings__DataProtectionDbConnection=Server=host.docker.internal\SQLEXPRESS,53625;Database=Development;User Id=Apt-Admin-135;Password=${DB_PASSWORD:-Abcd123@!};MultipleActiveResultSets=true'
+      - 'ConnectionStrings__ConfigurationDbConnection=Server=db;Database=IdentityServer4Admin;User Id=sa;Password=${DB_PASSWORD:-Password_123};MultipleActiveResultSets=true'
+      - 'ConnectionStrings__PersistedGrantDbConnection=Server=db;Database=IdentityServer4Admin;User Id=sa;Password=${DB_PASSWORD:-Password_123};MultipleActiveResultSets=true'
+      - 'ConnectionStrings__IdentityDbConnection=Server=db;Database=IdentityServer4Admin;User Id=sa;Password=${DB_PASSWORD:-Password_123};MultipleActiveResultSets=true'
+      - 'ConnectionStrings__DataProtectionDbConnection=Server=db;Database=IdentityServer4Admin;User Id=sa;Password=${DB_PASSWORD:-Password_123};MultipleActiveResultSets=true'
       - 'AdminConfiguration__IdentityAdminBaseUrl=https://admin.skoruba.local'
       - 'IdentityServerOptions__IssuerUri=https://sts.skoruba.local'
       - IdentityServerOptions__Events__RaiseErrorEvents=true
@@ -100,6 +100,8 @@ services:
       - IdentityServerOptions__Events__RaiseSuccessEvents=true
       - DockerConfiguration__UpdateCaCertificate=true
       - ASPNETCORE_ENVIRONMENT=Development
+    depends_on:
+      - db
     volumes:
       - './shared/serilog.json:/app/serilog.json'
       - './shared/nginx/certs/cacerts.crt:/usr/local/share/ca-certificates/cacerts.crt'
@@ -107,6 +109,18 @@ services:
       identityserverui:
         aliases:
           - sts.skoruba.local
+  db:
+    image: 'mcr.microsoft.com/mssql/server:2017-CU20-ubuntu-16.04'
+    ports:
+      - '7900:1433'
+    container_name: skoruba-identityserver4-db
+    environment:
+      SA_PASSWORD: '${DB_PASSWORD:-Password_123}'
+      ACCEPT_EULA: 'Y'
+    volumes:
+      - 'dbdata:/var/opt/mssql'
+    networks:
+      identityserverui: null
 volumes:
   dbdata:
     driver: local

@@ -9,6 +9,16 @@
     <DockerServiceName>skoruba.identityserver4.admin</DockerServiceName>
   </PropertyGroup>
   <ItemGroup>
+    <None Include="docker-compose-backup.override.yml">
+      <DependentUpon>docker-compose.yml</DependentUpon>
+    </None>
+    <None Include="docker-compose-backup.vs.debug.yml">
+      <DependentUpon>docker-compose.yml</DependentUpon>
+    </None>
+    <None Include="docker-compose-backup.vs.release.yml">
+      <DependentUpon>docker-compose.yml</DependentUpon>
+    </None>
+    <None Include="docker-compose-backup.yml" />
     <None Include="docker-compose.vs.debug.yml">
       <DependentUpon>docker-compose.yml</DependentUpon>
     </None>
