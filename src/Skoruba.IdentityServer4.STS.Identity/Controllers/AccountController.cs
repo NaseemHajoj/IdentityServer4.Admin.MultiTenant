@@ -144,7 +144,7 @@ namespace Skoruba.IdentityServer4.STS.Identity.Controllers
                 var user = await _userResolver.GetUserAsync(model.Username, model.TenantName);
                 if (user != default(TUser))
                 {
-                    var result = await _signInManager.PasswordSignInAsync(user.UserName, model.Password, model.RememberLogin, lockoutOnFailure: true);
+                    var result = await _signInManager.PasswordSignInAsync(user, model.Password, model.RememberLogin, lockoutOnFailure: true);
                     if (result.Succeeded)
                     {
                         await _events.RaiseAsync(new UserLoginSuccessEvent(user.UserName, user.Id.ToString(), user.UserName));

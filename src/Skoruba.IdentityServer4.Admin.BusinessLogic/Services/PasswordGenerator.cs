@@ -70,7 +70,7 @@ namespace Skoruba.IdentityServer4.Admin.BusinessLogic.Services
             for (int i = chars.Count; i < this.options.RequiredLength
                 || chars.Distinct().Count() < this.options.RequiredUniqueChars; i++)
             {
-                string rcs = randomChars[RandomNumberGenerator.GetInt32(0, randomChars.Length + 1)];
+                string rcs = randomChars[RandomNumberGenerator.GetInt32(0, randomChars.Length)];
                 chars.Insert(RandomNumberGenerator.GetInt32(0, chars.Count + 1),
                     rcs[RandomNumberGenerator.GetInt32(0, rcs.Length)]);
             }
