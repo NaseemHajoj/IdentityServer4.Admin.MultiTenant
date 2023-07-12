@@ -32,6 +32,12 @@ using Xunit;
 using System.Security.Claims;
 using Skoruba.IdentityServer4.Admin.EntityFramework.Shared.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Skoruba.IdentityServer4.Admin.BusinessLogic.Services.Interfaces;
+using Skoruba.IdentityServer4.Admin.BusinessLogic.Services;
+using Skoruba.IdentityServer4.Admin.EntityFramework.Identity.Repositories.Interfaces;
+using Microsoft.AspNetCore.Identity.UI.Services;
+using Skoruba.IdentityServer4.Shared.Configuration.Email;
+using Moq;
 
 namespace Skoruba.IdentityServer4.Admin.UnitTests.Controllers
 {
@@ -63,7 +69,8 @@ namespace Skoruba.IdentityServer4.Admin.UnitTests.Controllers
 
             // Get controller
             var controller = PrepareIdentityController(serviceProvider);
-            var userDto = IdentityDtoMock<string>.GenerateRandomUser();
+            UserDto<string> userDto = IdentityDtoMock<string>.GenerateRandomUser(/* no id should be provided */);
+
             var result = await controller.UserProfile(userDto);
 
             // Assert            
@@ -88,7 +95,7 @@ namespace Skoruba.IdentityServer4.Admin.UnitTests.Controllers
 
             // Get controller
             var controller = PrepareIdentityController(serviceProvider);
-            var userDto = IdentityDtoMock<string>.GenerateRandomUser();
+            UserDto<string> userDto = this.GetRandomUser();
 
             await identityService.CreateUserAsync(userDto);
 
@@ -130,7 +137,7 @@ namespace Skoruba.IdentityServer4.Admin.UnitTests.Controllers
 
             // Get controller
             var controller = PrepareIdentityController(serviceProvider);
-            var userDto = IdentityDtoMock<string>.GenerateRandomUser();
+            UserDto<string> userDto = this.GetRandomUser();
             await identityService.CreateUserAsync(userDto);
 
             //Get inserted userid
@@ -159,7 +166,7 @@ namespace Skoruba.IdentityServer4.Admin.UnitTests.Controllers
 
             // Get controller
             var controller = PrepareIdentityController(serviceProvider);
-            var userDto = IdentityDtoMock<string>.GenerateRandomUser();
+            UserDto<string> userDto = this.GetRandomUser();
 
             //Add user
             await identityService.CreateUserAsync(userDto);
@@ -300,7 +307,7 @@ namespace Skoruba.IdentityServer4.Admin.UnitTests.Controllers
 
             // Get controller
             var controller = PrepareIdentityController(serviceProvider);
-            var userDto = IdentityDtoMock<string>.GenerateRandomUser();
+            UserDto<string> userDto = this.GetRandomUser();
             await identityService.CreateUserAsync(userDto);
 
             var user = await dbContext.Users.Where(x => x.UserName == userDto.UserName).SingleOrDefaultAsync();
@@ -330,7 +337,7 @@ namespace Skoruba.IdentityServer4.Admin.UnitTests.Controllers
 
             // Get controller
             var controller = PrepareIdentityController(serviceProvider);
-            var userDto = IdentityDtoMock<string>.GenerateRandomUser();
+            UserDto<string> userDto = this.GetRandomUser();
             await identityService.CreateUserAsync(userDto);
 
             var roleDto = IdentityDtoMock<string>.GenerateRandomRole();
@@ -368,7 +375,7 @@ namespace Skoruba.IdentityServer4.Admin.UnitTests.Controllers
 
             // Get controller
             var controller = PrepareIdentityController(serviceProvider);
-            var userDto = IdentityDtoMock<string>.GenerateRandomUser();
+            UserDto<string> userDto = this.GetRandomUser();
             await identityService.CreateUserAsync(userDto);
 
             var roleDto = IdentityDtoMock<string>.GenerateRandomRole();
@@ -405,7 +412,7 @@ namespace Skoruba.IdentityServer4.Admin.UnitTests.Controllers
 
             // Get controller
             var controller = PrepareIdentityController(serviceProvider);
-            var userDto = IdentityDtoMock<string>.GenerateRandomUser();
+            UserDto<string> userDto = this.GetRandomUser();
             await identityService.CreateUserAsync(userDto);
 
             var user = await dbContext.Users.Where(x => x.UserName == userDto.UserName).SingleOrDefaultAsync();
@@ -500,7 +507,7 @@ namespace Skoruba.IdentityServer4.Admin.UnitTests.Controllers
 
             // Get controller
             var controller = PrepareIdentityController(serviceProvider);
-            var userDto = IdentityDtoMock<string>.GenerateRandomUser();
+            UserDto<string> userDto = this.GetRandomUser();
 
             await identityService.CreateUserAsync(userDto);
 
@@ -528,7 +535,7 @@ namespace Skoruba.IdentityServer4.Admin.UnitTests.Controllers
 
             // Get controller
             var controller = PrepareIdentityController(serviceProvider);
-            var userDto = IdentityDtoMock<string>.GenerateRandomUser();
+            UserDto<string> userDto = this.GetRandomUser();
             await identityService.CreateUserAsync(userDto);
 
             var userId = await dbContext.Users.Where(x => x.UserName == userDto.UserName).Select(x => x.Id).SingleOrDefaultAsync();
@@ -569,13 +576,15 @@ namespace Skoruba.IdentityServer4.Admin.UnitTests.Controllers
             var tempDataDictionaryFactory = serviceProvider.GetRequiredService<ITempDataDictionaryFactory>();
             var identityService = GetIdentityService(serviceProvider);
 
+            var tenantsManager = serviceProvider.GetRequiredService<ITenantsManager<ApplicationUser<string>>>();
+
             //Get Controller
             var controller = new IdentityController<UserDto<string>, RoleDto<string>,
                 ApplicationUser<string>, IdentityRole,  IdentityUserClaim<string>, IdentityUserRole<string>,
                 IdentityUserLogin<string>, IdentityRoleClaim<string>, IdentityUserToken<string>,
                 UsersDto<UserDto<string>, string>, RolesDto<RoleDto<string>, string>, UserRolesDto<RoleDto<string>, string>,
                 UserClaimsDto<UserClaimDto<string>, string>, UserProviderDto<string>, UserProvidersDto<UserProviderDto<string>, string>, UserChangePasswordDto<string>,
-                RoleClaimsDto<RoleClaimDto<string>, string>, UserClaimDto<string>, RoleClaimDto<string>>(identityService, logger, localizer);
+                RoleClaimsDto<RoleClaimDto<string>, string>, UserClaimDto<string>, RoleClaimDto<string>>(identityService, logger, localizer, tenantsManager);
 
             //Setup TempData for notification in basecontroller
             var httpContext = serviceProvider.GetRequiredService<IHttpContextAccessor>().HttpContext;
@@ -630,8 +639,7 @@ namespace Skoruba.IdentityServer4.Admin.UnitTests.Controllers
                 .AddUserManager<ApplicationUserManager<ApplicationUser<string>>>()
                 .AddDefaultTokenProviders();
 
-            services.AddScoped(typeof(IUserStore<>).MakeGenericType(typeof(ApplicationUser<string>), typeof(string)), typeof(ApplicationUserStore<ApplicationUser<string>>));
-
+            services.AddScoped(typeof(IUserStore<>).MakeGenericType(typeof(ApplicationUser<string>)), typeof(ApplicationUserStore<ApplicationUser<string>>));
 
             services.AddSession();
 
@@ -659,6 +667,13 @@ namespace Skoruba.IdentityServer4.Admin.UnitTests.Controllers
 
             services.AddLogging();
 
+            services.AddScoped<ITenantsManager<ApplicationUser<string>>, TenantsManager<ApplicationUser<string>>>();
+            services.AddScoped<ITenantsRepository, TenantsRepository>();
+            services.AddScoped<IPasswordGenerator, PasswordGenerator>();
+
+            var dummySendGridEmailSender = Mock.Of<IEmailSender>();
+            services.AddScoped<IEmailSender>(sp => dummySendGridEmailSender);
+
             return services.BuildServiceProvider();
         }
 
@@ -672,6 +687,11 @@ namespace Skoruba.IdentityServer4.Admin.UnitTests.Controllers
                         new ClaimsIdentity(claims, "mock"))
                 }
             };
+        }
+
+        private UserDto<string> GetRandomUser()
+        {
+            return IdentityDtoMock<string>.GenerateRandomUser(Guid.NewGuid().ToString());
         }
     }
 }

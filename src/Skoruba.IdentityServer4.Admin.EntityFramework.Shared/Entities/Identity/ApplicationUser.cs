@@ -56,16 +56,15 @@ namespace Skoruba.IdentityServer4.Admin.EntityFramework.Shared.Entities.Identity
         public Tenant Tenant { get; set; }
     }
 
-    public class ApplicationUser : ApplicationUser<string>
-    {
-    }
-
     public class ApplicationUserEntityTypeConfiguration<TKey> : IEntityTypeConfiguration<ApplicationUser<TKey>>
         where TKey : IEquatable<TKey>
     {
         /// <inheritdoc />
         public void Configure(EntityTypeBuilder<ApplicationUser<TKey>> builder)
         {
+            builder.Property(b => b.Id)
+                .ValueGeneratedOnAdd();
+
             builder.Property(b => b.CreatedDateTime)
                 .HasDefaultValueSql(DatabaseConstants.GetUtcDateSqlFunction);
 

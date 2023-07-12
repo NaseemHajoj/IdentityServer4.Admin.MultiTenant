@@ -8,6 +8,7 @@ namespace Skoruba.IdentityServer4.STS.Identity.IntegrationTests.Mocks
 {
     public static class UserMocks
     {
+        public static string TenantName = "Tenant-1";
         public static string UserPassword = "Pa$$word123";
         public static string AntiForgeryTokenKey = "__RequestVerificationToken";
 
@@ -16,18 +17,20 @@ namespace Skoruba.IdentityServer4.STS.Identity.IntegrationTests.Mocks
             return new Dictionary<string, string>
             {
                 { "UserName", Guid.NewGuid().ToString()},
+                { "TenantName", TenantName },
                 { "Password", UserPassword },
                 { "ConfirmPassword", UserPassword},
                 { "Email", $"{Guid.NewGuid().ToString()}@{Guid.NewGuid().ToString()}.com"}
             };
         }
 
-        public static Dictionary<string, string> GenerateLoginData(string userName, string password, string antiForgeryToken)
+        public static Dictionary<string, string> GenerateLoginData(string userName, string password, string tenantName, string antiForgeryToken)
         {
             var loginDataForm = new Dictionary<string, string>
             {
                 {"Username", userName},
                 {"Password", password},
+                {"TenantName", tenantName },
                 {"button", "login"},
                 {AntiForgeryTokenKey, antiForgeryToken}
             };

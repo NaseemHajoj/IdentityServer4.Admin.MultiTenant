@@ -36,8 +36,6 @@ namespace Skoruba.IdentityServer4.Admin.UnitTests.Mocks
         public static ApplicationUserManager<TUser> TestUserManager<TUser>(ApplicationUserStore<TUser> store = null) 
             where TUser : ApplicationUser<string>, new()
         {
-            // TODO: figure this out too, store 
-            IMultitenantUserStore<TUser> theStore = new Mock<IMultitenantUserStore<TUser>>().Object;
             var options = new Mock<IOptions<IdentityOptions>>();
             var idOptions = new IdentityOptions { Lockout = { AllowedForNewUsers = false } };
             options.Setup(o => o.Value).Returns(idOptions);
@@ -45,7 +43,7 @@ namespace Skoruba.IdentityServer4.Admin.UnitTests.Mocks
             var validator = new Mock<IUserValidator<TUser>>();
             userValidators.Add(validator.Object);
             var pwdValidators = new List<PasswordValidator<TUser>> { new PasswordValidator<TUser>() };
-            var userManager = new ApplicationUserManager<TUser>(theStore, options.Object, new PasswordHasher<TUser>(),
+            var userManager = new ApplicationUserManager<TUser>(store, options.Object, new PasswordHasher<TUser>(),
                 userValidators, pwdValidators, new UpperInvariantLookupNormalizer(),
                 new IdentityErrorDescriber(), null,
                 new Mock<ILogger<ApplicationUserManager<TUser>>>().Object);
